@@ -1,0 +1,229 @@
+/* Google Fonts imported in index.html */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* La Casa del Balompié Design System */
+@layer base {
+  :root {
+    /* Brand Colors - Black, Yellow, White Palette */
+    --balompie-black: 0 0% 8%;         /* #141414 */
+    --balompie-yellow: 51 100% 50%;     /* #FFD100 */
+    --balompie-white: 0 0% 98%;        /* #FAFAFA */
+    --balompie-gray: 0 0% 45%;         /* #737373 */
+    --balompie-yellow-dark: 45 90% 45%; /* Darker yellow */
+    
+    /* Fixed to Black Theme - Remove Light Mode */
+    --background: 0 0% 8%;
+    --foreground: 0 0% 95%;
+    
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 95%;
+    
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+    
+    --primary: 51 100% 50%;
+    --primary-foreground: 0 0% 8%;
+    
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 90%;
+    
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 80%;
+    
+    --accent: 51 100% 50%;
+    --accent-foreground: 0 0% 8%;
+    
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 0 0% 20%;
+    --input: 0 0% 15%;
+    --ring: 51 100% 50%;
+    
+    --radius: 0.75rem;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--balompie-black)), hsl(0 0% 20%));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--balompie-yellow)), hsl(var(--balompie-yellow-dark)));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 8%) 0%, hsl(0 0% 12%) 50%, hsl(var(--balompie-yellow)) 100%);
+    
+    /* Dark theme shadows */
+    --shadow-primary: 0 10px 40px -10px hsl(0 0% 0% / 0.5);
+    --shadow-accent: 0 10px 40px -10px hsl(var(--balompie-yellow) / 0.2);
+    --shadow-card: 0 4px 20px -2px hsl(0 0% 0% / 0.3);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    background-color: #141414;
+    color: #FFFFFF;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* Hero Section Styles */
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+  
+  .primary-gradient {
+    background: var(--gradient-primary);
+  }
+  
+  .accent-gradient {
+    background: var(--gradient-accent);
+  }
+  
+  /* Product Card Hover Effects */
+  .product-card {
+    @apply transition-all duration-300 hover:scale-105;
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-smooth);
+  }
+  
+  .product-card:hover {
+    box-shadow: var(--shadow-primary);
+  }
+  
+  /* Jersey Customization Styles */
+  .jersey-preview {
+    @apply relative overflow-hidden rounded-xl;
+    transition: var(--transition-smooth);
+    aspect-ratio: 3/4;
+  }
+  
+  .jersey-number {
+    @apply absolute font-bold;
+    color: white;
+    text-shadow: 
+      2px 2px 0px rgba(0,0,0,0.8),
+      -2px -2px 0px rgba(0,0,0,0.8),
+      2px -2px 0px rgba(0,0,0,0.8),
+      -2px 2px 0px rgba(0,0,0,0.8),
+      0px 0px 8px rgba(0,0,0,0.6);
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    z-index: 2;
+    transform: perspective(100px) rotateX(5deg);
+  }
+  
+  .jersey-name {
+    @apply absolute font-bold;
+    color: white;
+    text-shadow: 
+      1px 1px 0px rgba(0,0,0,0.8),
+      -1px -1px 0px rgba(0,0,0,0.8),
+      1px -1px 0px rgba(0,0,0,0.8),
+      -1px 1px 0px rgba(0,0,0,0.8),
+      0px 0px 6px rgba(0,0,0,0.6);
+    font-size: clamp(0.7rem, 2.5vw, 1.1rem);
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    z-index: 2;
+    transform: perspective(100px) rotateX(3deg);
+  }
+  
+  /* Button Variants */
+  .btn-hero {
+    @apply px-8 py-4 rounded-xl font-semibold text-lg;
+    background: var(--gradient-accent);
+    color: hsl(var(--balompie-black));
+    transition: var(--transition-bounce);
+    box-shadow: var(--shadow-accent);
+  }
+  
+  .btn-hero:hover {
+    @apply scale-105;
+    box-shadow: var(--shadow-primary);
+  }
+  
+  .btn-primary {
+    @apply px-6 py-3 rounded-lg font-semibold;
+    background: var(--gradient-accent);
+    color: hsl(var(--balompie-black));
+    transition: var(--transition-smooth);
+    box-shadow: var(--shadow-accent);
+  }
+  
+  .btn-primary:hover {
+    @apply scale-105;
+    box-shadow: var(--shadow-primary);
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.8s ease-out;
+}
+
+.animate-bounce-in {
+  animation: bounceIn 1s ease-out;
+}

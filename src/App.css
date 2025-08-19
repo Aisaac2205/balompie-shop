@@ -1,0 +1,32 @@
+/* Estilos mínimos para visibilidad de texto - sin interferir con Tailwind responsive */
+
+/* Solo forzar colores de texto, mantener tamaños y responsive de Tailwind */
+h1, h2, h3, h4, h5, h6 {
+  color: #FFFFFF !important;
+}
+
+p, span, div, a, li {
+  color: #FFFFFF !important;
+}
+
+/* Override solo de colores de Tailwind, no de tamaños */
+.text-foreground,
+.text-muted-foreground,
+.text-card-foreground,
+.text-popover-foreground {
+  color: #FFFFFF !important;
+}
+
+/* Mantener el tema oscuro */
+body {
+  background-color: #141414 !important;
+  color: #FFFFFF !important;
+}
+
+/* Solo colores, no tamaños ni responsive */
+.text-white,
+.text-white\/80,
+.text-white\/70,
+.text-white\/60 {
+  color: #FFFFFF !important;
+}
