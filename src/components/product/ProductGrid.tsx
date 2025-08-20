@@ -1,39 +1,29 @@
+import { Product } from "@/types/product";
 import { ProductCard } from "./ProductCard";
 import { ProductDialog } from "./ProductDialog";
-import { Button } from "@/components/ui/button";
-import { extendedMockProducts } from "@/data/extendedMockProducts";
 
+interface ProductGridProps {
+  products: Product[];
+}
 
-export function ProductGrid() {
-  return (
-    <section className="py-16 px-4">
-      <div className="container mx-auto">
-        <div className="text-center mb-12 animate-fade-in">
-          <h2 className="text-4xl font-bold mb-4">
-            Camisolas <span className="accent-gradient bg-gradient-to-r bg-clip-text text-transparent">Destacadas</span>
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Descubre las camisolas más populares de los mejores equipos del mundo. 
-            Personaliza con nombre, número y parches oficiales.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-slide-up">
-          {extendedMockProducts.slice(0, 6).map((product) => (
-            <ProductDialog key={product.id} product={product} trigger={
-              <div>
-                <ProductCard product={product} />
-              </div>
-            } />
-          ))}
-        </div>
-
-        <div className="text-center mt-12">
-          <Button className="btn-hero">
-            Ver Todas las Camisolas
-          </Button>
-        </div>
+export function ProductGrid({ products }: ProductGridProps) {
+  if (!products || products.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500">No hay productos disponibles</p>
       </div>
-    </section>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {products.map((product) => (
+        <ProductDialog key={product.id} product={product} trigger={
+          <div>
+            <ProductCard product={product} />
+          </div>
+        } />
+      ))}
+    </div>
   );
 }

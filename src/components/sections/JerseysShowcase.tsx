@@ -1,11 +1,12 @@
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductDialog } from "@/components/product/ProductDialog";
-import { extendedMockProducts } from "@/data/extendedMockProducts";
+import { useProducts } from "@/hooks/use-products";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Star, Shirt } from "lucide-react";
+import { Trophy, Star, Shirt, Package } from "lucide-react";
 
 export function JerseysShowcase() {
-  const featuredJerseys = extendedMockProducts.slice(0, 6);
+  const { data: products = [], isLoading } = useProducts();
+  const featuredJerseys = products.slice(0, 6);
   const categories = ['Local', 'Visitante', 'Alternativa', 'Champions League', 'Retro'];
 
   return (
@@ -46,17 +47,30 @@ export function JerseysShowcase() {
       {/* Contenido principal */}
       <div className="container mx-auto px-4">
         {/* Featured Jerseys Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-slide-up mb-16">
-          {featuredJerseys.map((jersey) => (
-            <div key={jersey.id} className="group">
-              <ProductDialog product={jersey} trigger={
-                <div className="transform group-hover:scale-105 transition-transform duration-300">
-                  <ProductCard product={jersey} />
-                </div>
-              } />
-            </div>
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+            <p className="text-white/80">Cargando camisolas destacadas...</p>
+          </div>
+        ) : featuredJerseys.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-slide-up mb-16">
+            {featuredJerseys.map((jersey) => (
+              <div key={jersey.id} className="group">
+                <ProductDialog product={jersey} trigger={
+                  <div className="transform group-hover:scale-105 transition-transform duration-300">
+                    <ProductCard product={jersey} />
+                  </div>
+                } />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <Package className="mx-auto h-16 w-16 text-white/60 mb-4" />
+            <h3 className="text-xl font-medium text-white mb-2">No hay camisolas disponibles</h3>
+            <p className="text-white/60">Pronto tendremos productos en nuestro catálogo</p>
+          </div>
+        )}
 
         {/* Call to Action */}
         <div className="text-center">

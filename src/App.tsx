@@ -9,6 +9,10 @@ import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import Teams from "./pages/Teams";
 import NotFound from "./pages/NotFound";
+import AdminLogin from "./pages/admin/Login";
+import AdminLayout from "./components/admin/AdminLayout";
+import Dashboard from "./pages/admin/Dashboard";
+import Products from "./pages/admin/Products";
 
 const queryClient = new QueryClient();
 
@@ -21,9 +25,23 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
+              {/* Public Routes */}
               <Route path="/" element={<Index />} />
               <Route path="/shop" element={<Shop />} />
               <Route path="/teams" element={<Teams />} />
+              
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="products" element={<Products />} />
+                <Route path="teams" element={<div>Gestión de Equipos (Próximamente)</div>} />
+                <Route path="patches" element={<div>Gestión de Parches (Próximamente)</div>} />
+                <Route path="users" element={<div>Gestión de Usuarios (Próximamente)</div>} />
+                <Route path="settings" element={<div>Configuración (Próximamente)</div>} />
+                <Route index element={<Dashboard />} />
+              </Route>
+              
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
