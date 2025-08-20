@@ -46,7 +46,7 @@ export function JerseysShowcase() {
       {/* Contenido principal */}
       <div className="container mx-auto px-4">
         {/* Featured Jerseys Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-slide-up mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 animate-slide-up mb-12 lg:mb-16">
           {featuredJerseys.map((jersey) => (
             <div key={jersey.id} className="group">
               <ProductDialog product={jersey} trigger={

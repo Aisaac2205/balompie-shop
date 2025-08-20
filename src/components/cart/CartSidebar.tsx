@@ -9,6 +9,8 @@ import { ShoppingCart, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { CartItem } from "@/types/product";
 import { CheckoutForm } from "./CheckoutForm";
+import { OrderConfirmation } from "@/components/orders/OrderConfirmation";
+import { formatPriceSimple } from "@/utils/currency";
 
 interface CartItemComponentProps {
   item: CartItem;
@@ -87,7 +89,7 @@ function CartItemComponent({ item, onUpdateQuantity, onRemove }: CartItemCompone
           
           <div className="flex items-center space-x-2">
             <span className="font-semibold text-sm">
-              Q.{(item.price * item.quantity).toFixed(2)}
+              {formatPriceSimple(item.price * item.quantity)}
             </span>
             <Button
               variant="ghost"
@@ -112,11 +114,32 @@ export function CartSidebar({ trigger }: CartSidebarProps) {
   const { items, total, itemCount, updateQuantity, removeItem, clearCart } = useCart();
   const [showCheckout, setShowCheckout] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [orderConfirmed, setOrderConfirmed] = useState(false);
+  const [orderData, setOrderData] = useState<{
+    orderId: string;
+    customerName: string;
+    phone: string;
+  } | null>(null);
 
   const handleCheckoutSuccess = () => {
+    // Generate order ID
+    const orderId = `BAL-${Date.now().toString().slice(-8)}`;
+    
+    setOrderData({
+      orderId,
+      customerName: "Cliente", // This would come from the form
+      phone: "+502xxxxxxxx" // This would come from the form
+    });
+    
+    setOrderConfirmed(true);
     setShowCheckout(false);
-    setIsOpen(false);
     clearCart();
+  };
+
+  const handleStartNewOrder = () => {
+    setOrderConfirmed(false);
+    setOrderData(null);
+    setIsOpen(false);
   };
 
   const defaultTrigger = (
@@ -185,11 +208,22 @@ export function CartSidebar({ trigger }: CartSidebarProps) {
                 <Separator />
                 <div className="flex items-center justify-between text-lg font-bold">
                   <span>Total:</span>
-                  <span>Q.{total.toFixed(2)}</span>
+                  <span>{formatPriceSimple(total)}</span>
                 </div>
               </div>
 
-              {showCheckout ? (
+              {orderConfirmed && orderData ? (
+                <div className="w-full">
+                  <OrderConfirmation
+                    orderId={orderData.orderId}
+                    customerName={orderData.customerName}
+                    phone={orderData.phone}
+                    items={items}
+                    total={total}
+                    onStartNewOrder={handleStartNewOrder}
+                  />
+                </div>
+              ) : showCheckout ? (
                 <div className="w-full">
                   <CheckoutForm
                     items={items}

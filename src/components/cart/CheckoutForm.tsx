@@ -16,6 +16,7 @@ import { CartItem } from "@/types/product";
 import { openWhatsAppChat, generateOrderSummary, sendOrderToAPI } from "@/utils/whatsapp";
 import { validateCustomerName, validatePhone } from "@/utils/validation";
 import { useToast } from "@/hooks/use-toast";
+import { formatPriceSimple } from "@/utils/currency";
 
 const checkoutSchema = z.object({
   customerName: z.string()
@@ -214,7 +215,7 @@ export function CheckoutForm({ items, total, onSuccess, onCancel }: CheckoutForm
             <div className="space-y-2">
               <div className="flex items-center justify-between text-lg font-bold">
                 <span>Total del Pedido:</span>
-                <span className="text-lg font-bold">Q.{total.toFixed(2)}</span>
+                <span className="text-lg font-bold">{formatPriceSimple(total)}</span>
               </div>
               <Button
                 type="button"
