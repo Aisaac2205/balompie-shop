@@ -13,6 +13,9 @@ import AdminLogin from "./pages/admin/Login";
 import AdminLayout from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import Products from "./pages/admin/Products";
+import TeamsAdmin from "./pages/admin/Teams";
+import PatchesAdmin from "./pages/admin/Patches";
+import SettingsAdmin from "./pages/admin/Settings";
 
 const queryClient = new QueryClient();
 
@@ -35,10 +38,9 @@ const App = () => (
               <Route path="/admin" element={<AdminLayout />}>
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="products" element={<Products />} />
-                <Route path="teams" element={<div>Gestión de Equipos (Próximamente)</div>} />
-                <Route path="patches" element={<div>Gestión de Parches (Próximamente)</div>} />
-                <Route path="users" element={<div>Gestión de Usuarios (Próximamente)</div>} />
-                <Route path="settings" element={<div>Configuración (Próximamente)</div>} />
+                <Route path="teams" element={<TeamsAdmin />} />
+                <Route path="patches" element={<PatchesAdmin />} />
+                <Route path="settings" element={<SettingsAdmin />} />
                 <Route index element={<Dashboard />} />
               </Route>
               
