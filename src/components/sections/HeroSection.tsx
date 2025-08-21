@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Shirt, Star, Trophy, Zap } from "lucide-react";
-import camisolasBackground from "@/assets/image.png";
 
 export function HeroSection() {
   return (
@@ -10,7 +9,7 @@ export function HeroSection() {
       <div 
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: `url(${camisolasBackground})`,
+          backgroundImage: 'url(/src/assets/camisolas-background.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
