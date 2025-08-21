@@ -53,11 +53,6 @@ const AdminLayout = () => {
       href: '/admin/patches',
     },
     {
-      name: 'Usuarios',
-      icon: Users,
-      href: '/admin/users',
-    },
-    {
       name: 'Configuración',
       icon: Settings,
       href: '/admin/settings',

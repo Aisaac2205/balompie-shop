@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { JerseysShowcase } from "@/components/sections/JerseysShowcase";
 import { FeaturesSection } from "@/components/sections/FeaturesSection";
+import backgroundImage from "@/assets/image.png";
 
 const Index = () => {
   return (

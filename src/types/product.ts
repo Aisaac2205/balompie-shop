@@ -14,6 +14,7 @@ export interface Product {
   playerImages?: string[]; // Player version images
   rating: number;
   reviews: number;
+  description?: string; // Product description
   badge?: string;
   season: string;
   competition: string;

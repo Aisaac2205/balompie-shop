@@ -138,7 +138,7 @@ const Products = () => {
             
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Nombre del Producto</Label>
+                <Label htmlFor="name">Nombre del Producto *</Label>
                 <Input
                   id="name"
                   value={product.name}
@@ -148,7 +148,7 @@ const Products = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="team">Equipo</Label>
+                <Label htmlFor="team">Equipo *</Label>
                 <Input
                   id="team"
                   value={product.team}
@@ -158,7 +158,7 @@ const Products = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="price">Precio</Label>
+                <Label htmlFor="price">Precio Fan *</Label>
                 <Input
                   id="price"
                   type="number"
@@ -169,7 +169,18 @@ const Products = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="season">Temporada</Label>
+                <Label htmlFor="playerPrice">Precio Jugador</Label>
+                <Input
+                  id="playerPrice"
+                  type="number"
+                  value={product.playerPrice || ''}
+                  onChange={(e) => updateLocalProduct({ playerPrice: Number(e.target.value) })}
+                  placeholder="450"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="season">Temporada *</Label>
                 <Input
                   id="season"
                   value={product.season}
@@ -179,7 +190,7 @@ const Products = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="competition">Competencia</Label>
+                <Label htmlFor="competition">Competencia *</Label>
                 <Input
                   id="competition"
                   value={product.competition}
@@ -201,12 +212,26 @@ const Products = () => {
                   placeholder="4.8"
                 />
               </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="reviews">Número de Reseñas</Label>
+                <Input
+                  id="reviews"
+                  type="number"
+                  min="0"
+                  value={product.reviews || 0}
+                  onChange={(e) => updateLocalProduct({ reviews: Number(e.target.value) })}
+                  placeholder="25"
+                />
+              </div>
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="description">Descripción</Label>
               <Textarea
                 id="description"
+                value={product.description || ''}
+                onChange={(e) => updateLocalProduct({ description: e.target.value })}
                 placeholder="Descripción del producto..."
                 rows={3}
               />

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Shirt, Star, Trophy, Zap } from "lucide-react";
-import camisolasBackground from "@/assets/camisolas-background.jpg";
+import camisolasBackground from "@/assets/image.png";
 
 export function HeroSection() {
   return (
@@ -56,26 +56,26 @@ export function HeroSection() {
             </a>
           </div>
 
-          {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <div className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
-              <Star className="h-8 w-8 mx-auto mb-3 text-accent" />
-              <h3 className="font-semibold text-lg mb-2 font-display text-white">Calidad Premium</h3>
-              <p className="text-white/80">Camisolas oficiales con tecnología deportiva de última generación</p>
-            </div>
-            
-            <div className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
-              <Shirt className="h-8 w-8 mx-auto mb-3 text-accent" />
-              <h3 className="font-semibold text-lg mb-2 font-display text-white">Personalización Total</h3>
-              <p className="text-white/80">Nombre, número y parches oficiales de todas las competiciones</p>
-            </div>
-            
-            <div className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
-              <Trophy className="h-8 w-8 mx-auto mb-3 text-accent" />
-              <h3 className="font-semibold text-lg mb-2 font-display text-white">9 Equipos Top + Retros</h3>
-              <p className="text-white/80">Barcelona, Real Madrid, Liverpool, Bayern Munich y colección retro exclusiva</p>
-            </div>
-          </div>
+              {/* Features */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-16">
+                <div className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                  <Star className="h-8 w-8 mx-auto mb-3 text-accent" />
+                  <h3 className="font-semibold text-lg mb-2 font-display text-white">Calidad Premium</h3>
+                  <p className="text-white/80">Camisolas oficiales con tecnología deportiva de última generación</p>
+                </div>
+                
+                <div className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                  <Shirt className="h-8 w-8 mx-auto mb-3 text-accent" />
+                  <h3 className="font-semibold text-lg mb-2 font-display text-white">Personalización Total</h3>
+                  <p className="text-white/80">Nombre, número y parches oficiales de todas las competiciones</p>
+                </div>
+                
+                <div className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                  <Trophy className="h-8 w-8 mx-auto mb-3 text-accent" />
+                  <h3 className="font-semibold text-lg mb-2 font-display text-white">10+ Equipos Top y Camisolas Retros</h3>
+                  <p className="text-white/80">Barcelona, Real Madrid, Liverpool, Bayern Munich y más</p>
+                </div>
+              </div>
         </div>
       </div>
     </section>
