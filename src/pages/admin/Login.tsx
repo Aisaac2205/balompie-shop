@@ -6,10 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Shield, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Shield, Eye, EyeOff, Info } from 'lucide-react';
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('ernesto@balompie-shop.com');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading, error, clearError } = useAuth();
@@ -47,13 +47,22 @@ const AdminLogin = () => {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
+
+            {/* Información de acceso */}
+            <Alert className="bg-blue-900/20 border-blue-700/50 text-blue-200">
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Usuario:</strong> ernesto@balompie-shop.com<br />
+                <strong>Contraseña:</strong> ernesto2024
+              </AlertDescription>
+            </Alert>
             
             <div className="space-y-2">
               <Label htmlFor="email" className="text-white">Correo Electrónico</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@jerseyrealm.com"
+                placeholder="ernesto@balompie-shop.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -107,14 +116,6 @@ const AdminLogin = () => {
               )}
             </Button>
           </form>
-          
-          <div className="mt-6 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-            <p className="text-sm text-gray-300 text-center">
-              <strong className="text-[#FFD100]">Credenciales de desarrollo:</strong><br />
-              Email: admin@jerseyrealm.com<br />
-              Contraseña: admin123
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
