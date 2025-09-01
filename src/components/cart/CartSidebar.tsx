@@ -39,7 +39,7 @@ function CartItemComponent({ item, onUpdateQuantity, onRemove }: CartItemCompone
           className="w-16 h-16 object-cover rounded-lg border border-white/20"
         />
         {item.customization?.playerNumber && (
-          <div className="absolute -top-1 -right-1 bg-accent text-background text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+          <div className="absolute -top-1 -right-1 bg-yellow-500 text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
             {item.customization.playerNumber}
           </div>
         )}
@@ -48,19 +48,19 @@ function CartItemComponent({ item, onUpdateQuantity, onRemove }: CartItemCompone
       {/* Product Details */}
       <div className="flex-1 min-w-0">
         <h4 className="font-semibold text-sm line-clamp-2 text-white">{item.name}</h4>
-        <p className="text-xs text-white/70">{item.team}</p>
-        <p className="text-xs text-white/70">Talla: {item.size}</p>
+        <p className="text-xs text-gray-300">{item.team}</p>
+        <p className="text-xs text-gray-300">Talla: {item.size}</p>
         
         {/* Customization details */}
         {(item.customization?.playerName || item.customization?.playerNumber) && (
           <div className="mt-2 space-y-1">
             {item.customization.playerName && (
-              <Badge variant="secondary" className="text-xs mr-1 bg-accent/20 text-accent border-accent/30">
+              <Badge variant="secondary" className="text-xs mr-1 bg-yellow-500/20 text-yellow-300 border-yellow-500/30">
                 {item.customization.playerName}
               </Badge>
             )}
             {item.customization.playerNumber && (
-              <Badge variant="secondary" className="text-xs bg-accent/20 text-accent border-accent/30">
+              <Badge variant="secondary" className="text-xs bg-yellow-500/20 text-yellow-300 border-yellow-500/30">
                 #{item.customization.playerNumber}
               </Badge>
             )}
@@ -80,7 +80,7 @@ function CartItemComponent({ item, onUpdateQuantity, onRemove }: CartItemCompone
         <div className="mt-2">
           <Badge 
             variant={item.version === 'player' ? 'default' : 'secondary'} 
-            className={`text-xs ${item.version === 'player' ? 'bg-gradient-to-r from-accent to-yellow-500 text-background' : 'bg-white/20 text-white border-white/30'}`}
+            className={`text-xs ${item.version === 'player' ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-black' : 'bg-white/10 text-white/80 border-white/20'}`}
           >
             {item.version === 'player' ? 'Jugador' : 'Fan'}
           </Badge>
@@ -92,7 +92,7 @@ function CartItemComponent({ item, onUpdateQuantity, onRemove }: CartItemCompone
             <Button
               variant="outline"
               size="icon"
-              className="h-7 w-7 border-white/30 text-white hover:bg-accent/20 hover:border-accent/60 transition-all duration-200"
+              className="h-7 w-7 border-white/30 text-white hover:bg-white/10 hover:border-yellow-500 transition-all duration-200"
               onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
               disabled={item.quantity <= 1}
             >
@@ -102,7 +102,7 @@ function CartItemComponent({ item, onUpdateQuantity, onRemove }: CartItemCompone
             <Button
               variant="outline"
               size="icon"
-              className="h-7 w-7 border-white/30 text-white hover:bg-accent/20 hover:border-accent/60 transition-all duration-200"
+              className="h-7 w-7 border-white/30 text-white hover:bg-white/10 hover:border-yellow-500 transition-all duration-200"
               onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
             >
               <Plus className="h-3 w-3" />
@@ -110,7 +110,7 @@ function CartItemComponent({ item, onUpdateQuantity, onRemove }: CartItemCompone
           </div>
           
           <div className="flex items-center space-x-2">
-            <span className="font-bold text-sm text-accent">
+            <span className="font-bold text-sm text-yellow-600">
               {formatPriceSimple(item.price * item.quantity)}
             </span>
             <Button
@@ -159,9 +159,10 @@ export function CartSidebar() {
   if (showCheckout) {
     return (
       <CheckoutForm 
-        onComplete={handleOrderComplete}
-        onBack={() => setShowCheckout(false)}
+        onSuccess={handleOrderComplete}
+        onCancel={() => setShowCheckout(false)}
         total={total}
+        items={items}
       />
     );
   }
@@ -169,12 +170,12 @@ export function CartSidebar() {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative hover:bg-accent/10">
+        <Button variant="ghost" size="icon" className="relative hover:bg-white/10 text-white">
           <ShoppingCart className="h-5 w-5" />
           {itemCount > 0 && (
             <Badge 
               variant="secondary" 
-              className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-accent text-background animate-bounce"
+              className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-yellow-500 text-black animate-bounce"
             >
               {itemCount}
             </Badge>
@@ -182,13 +183,13 @@ export function CartSidebar() {
         </Button>
       </SheetTrigger>
       
-      <SheetContent side="right" className="w-full sm:w-96 bg-background/95 backdrop-blur border-l border-white/20">
+      <SheetContent side="right" className="w-full sm:w-96 bg-black/95 backdrop-blur border-l border-white/20">
         <SheetHeader className="border-b border-white/20 pb-4">
           <SheetTitle className="text-white text-xl font-bold flex items-center gap-2">
-            <ShoppingBag className="h-6 w-6 text-accent" />
+            <ShoppingBag className="h-6 w-6 text-yellow-500" />
             Carrito de Compras
           </SheetTitle>
-          <SheetDescription className="text-white/70">
+          <SheetDescription className="text-gray-300">
             {itemCount === 0 ? 'Tu carrito está vacío' : `${itemCount} producto${itemCount !== 1 ? 's' : ''} en el carrito`}
           </SheetDescription>
         </SheetHeader>
@@ -196,16 +197,16 @@ export function CartSidebar() {
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <div className="relative mb-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-yellow-500/20 rounded-full blur-xl"></div>
-              <div className="relative bg-gradient-to-br from-accent/30 to-yellow-500/30 p-6 rounded-full">
-                <ShoppingCart className="h-16 w-16 text-white/60" />
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-200 to-yellow-400 rounded-full blur-xl"></div>
+              <div className="relative bg-gradient-to-br from-yellow-300 to-yellow-500 p-6 rounded-full">
+                <ShoppingCart className="h-16 w-16 text-white" />
               </div>
             </div>
             <h3 className="text-lg font-semibold text-white mb-2">Carrito Vacío</h3>
-            <p className="text-white/60 mb-6">Agrega algunas camisolas para comenzar</p>
+            <p className="text-gray-300 mb-6">Agrega algunas camisolas para comenzar</p>
             <Button 
               onClick={() => setIsOpen(false)}
-              className="bg-gradient-to-r from-accent to-yellow-500 hover:from-accent/90 hover:to-yellow-500/90"
+              className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black"
             >
               Explorar Camisolas
             </Button>
@@ -230,32 +231,32 @@ export function CartSidebar() {
               {/* Order Summary */}
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-white/70">Subtotal:</span>
+                  <span className="text-gray-300">Subtotal:</span>
                   <span className="text-white font-medium">{formatPriceSimple(total)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-white/70">Envío:</span>
+                  <span className="text-gray-300">Envío:</span>
                   <span className="text-white font-medium">Gratis</span>
                 </div>
                 <Separator className="bg-white/20" />
                 <div className="flex justify-between text-lg font-bold">
                   <span className="text-white">Total:</span>
-                  <span className="text-accent">{formatPriceSimple(total)}</span>
+                  <span className="text-yellow-500">{formatPriceSimple(total)}</span>
                 </div>
               </div>
 
               {/* Features */}
-              <div className="grid grid-cols-3 gap-2 text-xs text-white/60">
+              <div className="grid grid-cols-3 gap-2 text-xs text-gray-300">
                 <div className="flex flex-col items-center text-center">
-                  <Truck className="h-4 w-4 mb-1 text-accent" />
+                  <Truck className="h-4 w-4 mb-1 text-yellow-500" />
                   <span>Envío Gratis</span>
                 </div>
                 <div className="flex flex-col items-center text-center">
-                  <Shield className="h-4 w-4 mb-1 text-accent" />
+                  <Shield className="h-4 w-4 mb-1 text-yellow-500" />
                   <span>Garantía</span>
                 </div>
                 <div className="flex flex-col items-center text-center">
-                  <CreditCard className="h-4 w-4 mb-1 text-accent" />
+                  <CreditCard className="h-4 w-4 mb-1 text-yellow-500" />
                   <span>Pago Seguro</span>
                 </div>
               </div>
@@ -264,7 +265,7 @@ export function CartSidebar() {
               <div className="space-y-2">
                 <Button 
                   onClick={handleCheckout}
-                  className="w-full bg-gradient-to-r from-accent to-yellow-500 hover:from-accent/90 hover:to-yellow-500/90 text-background font-semibold py-3"
+                  className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold py-3"
                 >
                   <CreditCard className="h-4 w-4 mr-2" />
                   Proceder al Pago

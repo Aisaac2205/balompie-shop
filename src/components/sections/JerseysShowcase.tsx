@@ -50,28 +50,22 @@ export function JerseysShowcase() {
   const hasActiveFilters = selectedTeam !== 'all' || selectedVersion !== 'all' || priceRange[0] !== 0 || priceRange[1] !== 500;
 
   return (
-    <section className="py-20 bg-muted/30">
+    <section className="py-20 bg-gray-50">
       {/* Título simple sin fondo repetitivo */}
       <div className="container mx-auto px-4 mb-16">
         <div className="text-center animate-fade-in">
           {/* Icono principal con fondo decorativo */}
           <div className="inline-flex items-center gap-3 mb-6">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-accent/40 rounded-full blur-xl animate-pulse"></div>
-              <div className="relative bg-gradient-to-br from-accent to-yellow-500 p-3 rounded-full shadow-2xl shadow-accent/25">
-                <Shirt className="h-8 w-8 text-white drop-shadow-lg" />
-              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-200 to-yellow-400 rounded-full blur-xl animate-pulse"></div>
             </div>
-            <Badge variant="secondary" className="text-sm bg-gradient-to-r from-accent/90 to-yellow-500/90 text-white border-0 shadow-lg">
-              Colección 2024/25
-            </Badge>
           </div>
           
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white font-display">
-            Nuestras <span className="accent-gradient bg-gradient-to-r from-accent via-yellow-400 to-yellow-500 bg-clip-text text-transparent">Camisolas</span>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-black">
+            Nuestras <span className="text-yellow-600">Camisolas</span>
           </h2>
           
-          <p className="text-xl text-white/80 max-w-3xl mx-auto mb-8">
+          <p className="text-xl text-gray-700 max-w-3xl mx-auto mb-8">
             Descubre la colección más completa de camisolas oficiales de los mejores equipos del mundo
           </p>
           
@@ -81,10 +75,10 @@ export function JerseysShowcase() {
               <Badge 
                 key={category} 
                 variant="outline" 
-                className="group relative overflow-hidden text-white border-white/30 hover:border-accent/60 hover:bg-gradient-to-r hover:from-accent/10 hover:to-yellow-500/10 transition-all duration-300 cursor-pointer transform hover:scale-105 hover:shadow-lg hover:shadow-accent/25"
+                className="group relative overflow-hidden text-gray-700 border-gray-300 hover:border-yellow-500 hover:bg-yellow-50 transition-all duration-300 cursor-pointer transform hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/25"
               >
                 <span className="relative z-10">{category}</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-accent/0 via-accent/5 to-accent/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/0 via-yellow-500/5 to-yellow-500/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
               </Badge>
             ))}
           </div>
@@ -101,12 +95,12 @@ export function JerseysShowcase() {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowFilters(!showFilters)}
-                className="border-white/30 text-white hover:bg-accent/10 hover:border-accent/60"
+                className="border-gray-300 text-gray-700 hover:bg-yellow-50 hover:border-yellow-500"
               >
                 <Filter className="h-4 w-4 mr-2" />
                 Filtros
                 {hasActiveFilters && (
-                  <Badge variant="secondary" className="ml-2 bg-accent text-background">
+                  <Badge variant="secondary" className="ml-2 bg-yellow-500 text-black">
                     {[selectedTeam !== 'all', selectedVersion !== 'all', priceRange[0] !== 0 || priceRange[1] !== 500].filter(Boolean).length}
                   </Badge>
                 )}
@@ -117,7 +111,7 @@ export function JerseysShowcase() {
                   variant="ghost"
                   size="sm"
                   onClick={clearFilters}
-                  className="text-white/70 hover:text-white hover:bg-white/10"
+                  className="text-gray-600 hover:text-black hover:bg-gray-100"
                 >
                   <X className="h-4 w-4 mr-2" />
                   Limpiar
@@ -126,13 +120,13 @@ export function JerseysShowcase() {
             </div>
             
             <div className="flex items-center gap-2">
-              <span className="text-white/70 text-sm">Vista:</span>
-              <div className="flex border border-white/20 rounded-lg overflow-hidden">
+              <span className="text-gray-600 text-sm">Vista:</span>
+              <div className="flex border border-gray-300 rounded-lg overflow-hidden">
                 <Button
                   variant={viewMode === 'grid' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('grid')}
-                  className={`rounded-none ${viewMode === 'grid' ? 'bg-accent text-background' : 'text-white hover:bg-white/10'}`}
+                  className={`rounded-none ${viewMode === 'grid' ? 'bg-yellow-500 text-black' : 'text-gray-700 hover:bg-gray-100'}`}
                 >
                   <Grid className="h-4 w-4" />
                 </Button>
@@ -140,7 +134,7 @@ export function JerseysShowcase() {
                   variant={viewMode === 'list' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('list')}
-                  className={`rounded-none ${viewMode === 'list' ? 'bg-accent text-background' : 'text-white hover:bg-white/10'}`}
+                  className={`rounded-none ${viewMode === 'list' ? 'bg-yellow-500 text-black' : 'text-gray-700 hover:bg-gray-100'}`}
                 >
                   <List className="h-4 w-4" />
                 </Button>
@@ -150,18 +144,18 @@ export function JerseysShowcase() {
           
           {/* Filters Panel */}
           {showFilters && (
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 mb-6">
+            <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 mb-6 shadow-lg">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Team Filter */}
                 <div>
-                  <label className="block text-white font-medium mb-3">Equipo</label>
+                  <label className="block text-black font-medium mb-3">Equipo</label>
                   <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-                    <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                    <SelectTrigger className="bg-white border-gray-300 text-black">
                       <SelectValue placeholder="Seleccionar equipo" />
                     </SelectTrigger>
-                    <SelectContent className="bg-background/95 border-white/20">
+                    <SelectContent className="bg-white border-gray-300">
                       {teams.map(team => (
-                        <SelectItem key={team} value={team} className="text-white hover:bg-accent/10">
+                        <SelectItem key={team} value={team} className="text-black hover:bg-yellow-50">
                           {team === 'all' ? 'Todos los equipos' : team}
                         </SelectItem>
                       ))}
@@ -171,14 +165,14 @@ export function JerseysShowcase() {
                 
                 {/* Version Filter */}
                 <div>
-                  <label className="block text-white font-medium mb-3">Versión</label>
+                  <label className="block text-black font-medium mb-3">Versión</label>
                   <Select value={selectedVersion} onValueChange={setSelectedVersion}>
-                    <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                    <SelectTrigger className="bg-white border-gray-300 text-black">
                       <SelectValue placeholder="Seleccionar versión" />
                     </SelectTrigger>
-                    <SelectContent className="bg-background/95 border-white/20">
+                    <SelectContent className="bg-white border-gray-300">
                       {versions.map(version => (
-                        <SelectItem key={version} value={version} className="text-white hover:bg-accent/10">
+                        <SelectItem key={version} value={version} className="text-black hover:bg-yellow-50">
                           {version === 'all' ? 'Todas las versiones' : version}
                         </SelectItem>
                       ))}
@@ -188,7 +182,7 @@ export function JerseysShowcase() {
                 
                 {/* Price Range Filter */}
                 <div>
-                  <label className="block text-white font-medium mb-3">
+                  <label className="block text-black font-medium mb-3">
                     Rango de Precio: Q{priceRange[0]} - Q{priceRange[1]}
                   </label>
                   <Slider
@@ -206,10 +200,10 @@ export function JerseysShowcase() {
           
           {/* Results Count */}
           <div className="text-center mb-6">
-            <p className="text-white/80">
+            <p className="text-gray-700">
               Mostrando {filteredProducts.length} de {products.length} camisolas
               {hasActiveFilters && (
-                <span className="text-accent"> (filtradas)</span>
+                <span className="text-yellow-600"> (filtradas)</span>
               )}
             </p>
           </div>
@@ -219,10 +213,10 @@ export function JerseysShowcase() {
         {isLoading ? (
           <div className="text-center py-12">
             <div className="relative mx-auto mb-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-accent/30 to-yellow-500/30 rounded-full blur-xl animate-pulse"></div>
-              <div className="relative animate-spin rounded-full h-16 w-16 border-4 border-transparent border-t-accent border-r-yellow-500 shadow-2xl shadow-accent/25"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-200 to-yellow-400 rounded-full blur-xl animate-pulse"></div>
+              <div className="relative animate-spin rounded-full h-16 w-16 border-4 border-transparent border-t-yellow-500 border-r-yellow-600 shadow-2xl shadow-yellow-500/25"></div>
             </div>
-            <p className="text-white/80 text-lg">Cargando camisolas destacadas...</p>
+            <p className="text-gray-700 text-lg">Cargando camisolas destacadas...</p>
           </div>
         ) : featuredJerseys.length > 0 ? (
           <div className={`grid gap-6 animate-slide-up mb-12 lg:mb-16 ${
@@ -243,15 +237,15 @@ export function JerseysShowcase() {
         ) : (
           <div className="text-center py-12">
             <div className="relative mx-auto mb-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-full blur-xl"></div>
-              <div className="relative bg-gradient-to-br from-white/20 to-white/10 p-4 rounded-full border border-white/20">
-                <Package className="h-16 w-16 text-white/80 drop-shadow-lg" />
+              <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full blur-xl"></div>
+              <div className="relative bg-gradient-to-br from-gray-200 to-gray-300 p-4 rounded-full border border-gray-300">
+                <Package className="h-16 w-16 text-gray-600 drop-shadow-lg" />
               </div>
             </div>
-            <h3 className="text-xl font-medium text-white mb-2">No hay camisolas disponibles</h3>
-            <p className="text-white/60 mb-4">Pronto tendremos productos en nuestro catálogo</p>
+            <h3 className="text-xl font-medium text-black mb-2">No hay camisolas disponibles</h3>
+            <p className="text-gray-600 mb-4">Pronto tendremos productos en nuestro catálogo</p>
             {hasActiveFilters && (
-              <Button onClick={clearFilters} variant="outline" className="border-white/30 text-white hover:bg-white/10">
+              <Button onClick={clearFilters} variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-100">
                 Limpiar filtros
               </Button>
             )}
@@ -260,23 +254,23 @@ export function JerseysShowcase() {
 
         {/* Call to Action mejorado */}
         <div className="text-center">
-          <div className="relative bg-gradient-to-br from-white/15 via-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-8 max-w-2xl mx-auto border border-white/20 shadow-2xl shadow-black/20 overflow-hidden">
+          <div className="relative bg-white backdrop-blur-sm rounded-2xl p-8 max-w-2xl mx-auto border border-gray-200 shadow-2xl shadow-gray-200/50 overflow-hidden">
             {/* Efecto de fondo decorativo */}
-            <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-yellow-500/5"></div>
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent via-yellow-400 to-yellow-500"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 via-transparent to-yellow-100/50"></div>
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600"></div>
             
             {/* Icono del trofeo mejorado */}
             <div className="relative mb-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-accent/30 to-yellow-500/30 rounded-full blur-2xl animate-pulse"></div>
-              <div className="relative bg-gradient-to-br from-accent to-yellow-500 p-4 rounded-full shadow-2xl shadow-accent/25 mx-auto w-20 h-20 flex items-center justify-center">
-                <Trophy className="h-10 w-10 text-white drop-shadow-lg" />
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-200 to-yellow-400 rounded-full blur-2xl animate-pulse"></div>
+              <div className="relative bg-gradient-to-br from-yellow-500 to-yellow-600 p-4 rounded-full shadow-2xl shadow-yellow-500/25 mx-auto w-20 h-20 flex items-center justify-center">
+                <Trophy className="h-10 w-10 text-black drop-shadow-lg" />
               </div>
             </div>
             
-            <h3 className="text-2xl font-bold mb-4 text-white relative z-10">
+            <h3 className="text-2xl font-bold mb-4 text-black relative z-10">
               ¿No encuentras tu equipo favorito?
             </h3>
-            <p className="text-white/80 mb-8 relative z-10">
+            <p className="text-gray-700 mb-8 relative z-10">
               Contáctanos y te ayudaremos a conseguir la camisola que buscas, incluso si no está en nuestro catálogo
             </p>
             
@@ -284,12 +278,12 @@ export function JerseysShowcase() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
               <a 
                 href="/shop"
-                className="group relative overflow-hidden bg-gradient-to-r from-accent/80 to-yellow-500/80 text-white px-6 py-3 rounded-xl font-semibold shadow-xl shadow-accent/25 transform hover:scale-105 hover:shadow-2xl hover:shadow-accent/30 transition-all duration-300"
+                className="group relative overflow-hidden bg-gradient-to-r from-yellow-500 to-yellow-600 text-black px-6 py-3 rounded-xl font-semibold shadow-xl shadow-yellow-500/25 transform hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/30 transition-all duration-300"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-accent/0 via-white/20 to-accent/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/0 via-white/20 to-yellow-500/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                 <div className="relative flex items-center justify-center">
                   <div className="bg-white/20 p-1.5 rounded-lg mr-3">
-                    <Shirt className="h-5 w-5 text-white drop-shadow-sm" />
+                    <Shirt className="h-5 w-5 text-black drop-shadow-sm" />
                   </div>
                   Ver Catálogo Completo
                 </div>
@@ -301,12 +295,12 @@ export function JerseysShowcase() {
                   const whatsappUrl = `https://wa.me/50246907489?text=${encodeURIComponent(message)}`;
                   window.open(whatsappUrl, '_blank');
                 }}
-                className="group relative overflow-hidden bg-transparent border-2 border-white/30 text-white px-6 py-3 rounded-xl font-semibold hover:border-accent/60 hover:bg-gradient-to-r hover:from-accent/10 hover:to-yellow-500/10 transform hover:scale-105 transition-all duration-300"
+                className="group relative overflow-hidden bg-transparent border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:border-yellow-500 hover:bg-yellow-50 transform hover:scale-105 transition-all duration-300"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-accent/0 via-accent/10 to-accent/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/0 via-yellow-500/10 to-yellow-500/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                 <div className="relative flex items-center justify-center">
-                  <div className="bg-accent/20 p-1.5 rounded-lg mr-3">
-                    <Star className="h-5 w-5 text-accent drop-shadow-sm" />
+                  <div className="bg-yellow-500/20 p-1.5 rounded-lg mr-3">
+                    <Star className="h-5 w-5 text-yellow-600 drop-shadow-sm" />
                   </div>
                   Solicitar Camisola Especial
                 </div>

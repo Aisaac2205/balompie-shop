@@ -3,78 +3,81 @@
 
 export interface Product {
   id: string;
+  team: string;
+  equipmentType: 'local' | 'visitante' | 'tercera' | 'alternativa' | 'champions';
+  productType: 'fan' | 'player';
+  name: string;
+  description?: string;
+  price: number;
+  playerPrice?: number; // Precio para versión jugador
+  images: string[]; // Array de hasta 3 imágenes
+  sizes: ('S' | 'M' | 'L' | 'XL' | 'XXL')[];
+  primaryColor: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CartItem {
+  id: string;
   name: string;
   team: string;
   price: number;
-  playerPrice?: number; // Player version price
-  originalPrice?: number;
   image: string;
-  playerImage?: string; // Player version image
-  images?: string[]; // Additional images for gallery
-  playerImages?: string[]; // Player version images
-  rating: number;
-  reviews: number;
-  description?: string; // Product description
-  badge?: string;
-  season: string;
-  competition: string;
-  availableSizes: string[];
-  stock: Record<string, number>; // size -> quantity
-  patches: Patch[];
-  players: string[];
-  createdAt?: Date;
-  updatedAt?: Date;
+  size: string;
+  quantity: number;
+  version: 'fan' | 'player';
+  customization?: {
+    playerName?: string;
+    playerNumber?: string;
+    selectedPatch?: {
+      id: string;
+      name: string;
+      price: number;
+    };
+  };
 }
 
 export interface Patch {
   id: string;
   name: string;
-  image: string;
   price: number;
+  category: 'league' | 'cup' | 'international' | 'special' | 'custom';
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  image: string;
+  isActive: boolean;
 }
 
-export interface CartItem {
+export interface Team {
   id: string;
-  productId: string;
   name: string;
+  country: string;
+  league: string;
+  logo: string;
+  achievements: string[];
+  isActive: boolean;
+}
+
+// Tipos para el formulario de producto
+export interface ProductFormData {
   team: string;
+  equipmentType: 'local' | 'visitante' | 'tercera' | 'alternativa' | 'champions';
+  productType: 'fan' | 'player';
+  name: string;
+  description: string;
   price: number;
-  size: string;
-  quantity: number;
-  version: 'fan' | 'player'; // Jersey version
-  customization?: ProductCustomization;
-  image: string;
+  playerPrice: number;
+  images: string[];
+  sizes: ('S' | 'M' | 'L' | 'XL' | 'XXL')[];
+  primaryColor: string;
+  isActive: boolean;
 }
 
-export interface ProductCustomization {
-  playerName?: string;
-  playerNumber?: string;
-  selectedPatch?: Patch; // Only one patch selection
-}
-
-export interface OrderItem {
-  productId: string;
-  size: string;
-  quantity: number;
-  customization?: ProductCustomization;
-}
-
-export interface Order {
-  id: string;
-  customerName: string;
-  phone: string;
-  items: OrderItem[];
-  total: number;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
-  createdAt: Date;
-}
-
-// Filter types
+// Tipos para filtros
 export interface ProductFilters {
-  team?: string;
-  competition?: string;
-  season?: string;
-  priceRange?: [number, number];
-  rating?: number;
-  onSale?: boolean;
+  team: string;
+  equipmentType: string;
+  productType: string;
+  status: 'all' | 'active' | 'inactive';
+  search: string;
 }

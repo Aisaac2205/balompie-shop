@@ -1,152 +1,179 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Star, Heart, Eye } from "lucide-react";
-import { formatPriceSimple, calculateDiscount } from "@/utils/currency";
-import { useState } from "react";
-
-interface Product {
-  id: string;
-  name: string;
-  team: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  rating: number;
-  reviews: number;
-  badge?: string;
-}
+import { useState } from 'react';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Product } from '@/types/product';
+import { formatPriceSimple } from '@/utils/currency';
 
 interface ProductCardProps {
   product: Product;
-  onClick?: () => void;
+  onAddToCart?: (product: Product) => void;
 }
 
-export function ProductCard({ product, onClick }: ProductCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
+export function ProductCard({ product, onAddToCart }: ProductCardProps) {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  const discountInfo = product.originalPrice 
-    ? calculateDiscount(product.originalPrice, product.price)
-    : null;
+  const images = product.images?.filter(img => img.trim() !== '') || [];
+  const hasMultipleImages = images.length > 1;
+  
+  const nextImage = () => {
+    if (hasMultipleImages) {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }
+  };
+  
+  const prevImage = () => {
+    if (hasMultipleImages) {
+      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (onAddToCart) {
+      onAddToCart(product);
+    }
+  };
 
   return (
-    <Card 
-      className="product-card cursor-pointer group overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-accent/20 border-white/20 hover:border-accent/40 bg-white/5 hover:bg-white/10"
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <CardContent className="p-0 relative">
-        {/* Image Container */}
-        <div className="relative overflow-hidden">
+    <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 bg-white border-gray-200">
+      <CardContent className="p-0">
+        {/* Imagen del producto */}
+        <div className="relative aspect-square overflow-hidden">
           <img
-            src={product.image}
+            src={images[currentImageIndex] || '/placeholder.svg'}
             alt={product.name}
-            className="w-full h-48 sm:h-56 md:h-64 object-cover transition-all duration-700 group-hover:scale-110"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => {
+              e.currentTarget.src = '/placeholder.svg';
+            }}
           />
           
-          {/* Overlay with actions */}
-          <div className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-between p-4`}>
-            <Button 
-              size="sm" 
-              variant="secondary" 
-              className="bg-white/20 hover:bg-white/30 text-white border-white/30 hover:border-white/50 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsFavorite(!isFavorite);
-              }}
-            >
-              <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-white'}`} />
-            </Button>
-            
-            <Button 
-              size="sm" 
-              variant="secondary" 
-              className="bg-white/20 hover:bg-white/30 text-white border-white/30 hover:border-white/50 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 delay-100"
-            >
-              <Eye className="h-4 w-4" />
-            </Button>
-          </div>
-          
           {/* Badges */}
-          <div className="absolute top-3 left-3 space-y-2">
-            {product.badge && (
-              <Badge 
-                className="accent-gradient text-background font-semibold text-xs px-2 py-1 shadow-lg transform -rotate-2 hover:rotate-0 transition-transform duration-300"
-              >
-                {product.badge}
+          <div className="absolute top-2 left-2 flex flex-col gap-1">
+            {product.productType === 'player' && (
+              <Badge className="bg-yellow-500 text-black text-xs font-medium">
+                Jugador
               </Badge>
             )}
-            
-            {discountInfo && (
-              <Badge 
-                variant="destructive" 
-                className="text-xs px-2 py-1 shadow-lg transform rotate-2 hover:rotate-0 transition-transform duration-300"
-              >
-                -{discountInfo.percentage}%
-              </Badge>
-            )}
-          </div>
-        </div>
-        
-        {/* Content */}
-        <div className="p-4 sm:p-5">
-          {/* Team and Rating */}
-          <div className="flex items-center justify-between mb-3">
-            <Badge 
-              variant="secondary" 
-              className="text-xs px-3 py-1 bg-accent/20 text-accent border-accent/30 hover:bg-accent/30 transition-colors duration-300 truncate max-w-[140px]"
-            > 
-              {product.team}
+            <Badge variant="secondary" className="text-xs bg-white/90 text-gray-800">
+              {product.equipmentType === 'local' ? 'Local' : 
+               product.equipmentType === 'visitante' ? 'Visitante' :
+               product.equipmentType === 'tercera' ? 'Tercera' :
+               product.equipmentType === 'alternativa' ? 'Alternativa' :
+               product.equipmentType === 'champions' ? 'Champions' : product.equipmentType}
             </Badge>
-            <div className="flex items-center space-x-1.5 flex-shrink-0">
-              <Star className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-xs sm:text-sm text-white/80 font-medium">
-                {product.rating.toFixed(1)} ({product.reviews})
-              </span>
-            </div>
           </div>
           
-          {/* Product Name */}
-          <h3 className="font-bold text-base sm:text-lg mb-3 line-clamp-2 text-white leading-tight group-hover:text-accent transition-colors duration-300">
-            {product.name}
-          </h3>
+          {/* Indicador de múltiples imágenes */}
+          {hasMultipleImages && (
+            <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+              {currentImageIndex + 1} / {images.length}
+            </div>
+          )}
           
-          {/* Price */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <span className="text-xl sm:text-2xl font-bold text-accent group-hover:text-yellow-400 transition-colors duration-300">
+          {/* Controles de navegación de imágenes */}
+          {hasMultipleImages && (
+            <>
+              <button
+                onClick={prevImage}
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label="Imagen anterior"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                onClick={nextImage}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label="Siguiente imagen"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </>
+          )}
+          
+          {/* Indicadores de puntos */}
+          {hasMultipleImages && (
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+              {images.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    index === currentImageIndex 
+                      ? 'bg-white' 
+                      : 'bg-white/50 hover:bg-white/75'
+                  }`}
+                  aria-label={`Ir a imagen ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Información del producto */}
+        <div className="p-4">
+          <div className="space-y-2">
+            {/* Nombre del producto */}
+            <h3 className="font-semibold text-gray-900 line-clamp-2 leading-tight">
+              {product.name}
+            </h3>
+            
+            {/* Equipo */}
+            <p className="text-sm text-gray-600">{product.team}</p>
+            
+            {/* Color */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500">Color:</span>
+              <Badge variant="outline" className="text-xs border-gray-300 text-gray-700">
+                {product.primaryColor}
+              </Badge>
+            </div>
+            
+            {/* Tallas disponibles */}
+            <div className="flex flex-wrap gap-1">
+              {product.sizes?.slice(0, 4).map(size => (
+                <Badge key={size} variant="secondary" className="text-xs bg-gray-100 text-gray-700">
+                  {size}
+                </Badge>
+              ))}
+              {product.sizes && product.sizes.length > 4 && (
+                <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700">
+                  +{product.sizes.length - 4}
+                </Badge>
+              )}
+            </div>
+            
+            {/* Precio */}
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-bold text-yellow-600">
                 {formatPriceSimple(product.price)}
               </span>
-              {product.originalPrice && (
-                <span className="text-base sm:text-lg text-white/50 line-through">
-                  {formatPriceSimple(product.originalPrice)}
+              {product.playerPrice && product.playerPrice > product.price && (
+                <span className="text-sm text-gray-500 line-through">
+                  {formatPriceSimple(product.playerPrice)}
                 </span>
               )}
             </div>
             
-            {/* Quick view indicator */}
-            <div className={`opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0`}>
-              <Eye className="h-4 w-4 text-white/60" />
+            {/* Rating (estático por ahora) */}
+            <div className="flex items-center gap-1">
+              <span className="text-sm text-gray-600">4.8 (24)</span>
             </div>
           </div>
         </div>
       </CardContent>
-      
-      {/* Footer with Button */}
-      <CardFooter className="p-4 sm:p-5 pt-0">
+
+      {/* Footer con botón de agregar al carrito */}
+      <CardFooter className="p-4 pt-0">
         <Button 
-          className="w-full btn-primary text-sm sm:text-base font-semibold py-3 bg-gradient-to-r from-accent to-yellow-500 hover:from-accent/90 hover:to-yellow-500/90 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-accent/25"
-          onClick={(e) => e.stopPropagation()}
+          onClick={handleAddToCart}
+          className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-medium"
         >
           <ShoppingCart className="h-4 w-4 mr-2" />
-          Personalizar Ahora
+          Agregar
         </Button>
       </CardFooter>
-      
-      {/* Hover effect border */}
-      <div className={`absolute inset-0 border-2 border-accent/0 group-hover:border-accent/40 rounded-lg transition-all duration-500 pointer-events-none`}></div>
     </Card>
   );
 }

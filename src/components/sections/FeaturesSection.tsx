@@ -17,17 +17,17 @@ const features = [
   {
     icon: Truck,
     title: "Envío Gratuito",
-    description: "Envío gratuito en pedidos superiores a Q.500. Entrega rápida en toda Guatemala."
+    description: "Envío gratuito en todos los pedidos. Entrega rápida en toda Guatemala."
   },
   {
     icon: Shield,
     title: "Garantía de Calidad",
-    description: "Camisolas 100% oficiales con garantía de autenticidad y calidad premium."
+    description: "Camisolas 100% oficiales con garantía de autenticidad y calidad premium en todas las camisolas."
   },
   {
     icon: Crown,
     title: "Equipos de Elite",
-    description: "Los mejores clubes del mundo: Barcelona, Real Madrid, City, PSG y más."
+    description: "Los mejores clubes del mundo: Barcelona, Real Madrid, City, PSG y más. En nuestra tienda encontrarás las camisolas de todos los equipos del mundo."
   },
   {
     icon: Sparkles,
@@ -43,17 +43,17 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="py-20 bg-muted/30">
+    <section className="py-20 bg-gray-50">
       {/* Título simple sin fondo repetitivo */}
       <div className="container mx-auto px-4 mb-16">
         <div className="text-center animate-fade-in">
-          <h2 className="text-4xl font-bold mb-4 text-white">
+          <h2 className="text-4xl font-bold mb-4 text-black">
             ¿Por qué elegir 
-            <span className="accent-gradient bg-gradient-to-r bg-clip-text text-transparent ml-2">
-              La Casa del Balompié?
+            <span className="text-yellow-600 ml-2">
+              COLECCIONES DE TEMPORADA?
             </span>
           </h2>
-          <p className="text-xl text-white/80 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-700 max-w-3xl mx-auto">
             Somos la tienda líder en camisolas personalizadas con la mejor experiencia de compra online
           </p>
         </div>
@@ -65,20 +65,20 @@ export function FeaturesSection() {
           {features.map((feature, index) => (
             <Card 
               key={index} 
-              className="product-card text-center border-none shadow-card hover:shadow-primary transition-all duration-300 bg-white/10 backdrop-blur-sm"
+              className="product-card text-center border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 bg-white"
             >
               <CardContent className="p-8">
                 <div className="relative mb-6">
-                  <div className="w-16 h-16 mx-auto accent-gradient rounded-full flex items-center justify-center">
-                    <feature.icon className="h-8 w-8 text-balompie-blue" />
+                  <div className="w-16 h-16 mx-auto bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center">
+                    <feature.icon className="h-8 w-8 text-white" />
                   </div>
                 </div>
                 
-                <h3 className="text-xl font-semibold mb-3 text-white">
+                <h3 className="text-xl font-semibold mb-3 text-black">
                   {feature.title}
                 </h3>
                 
-                <p className="text-white/80 leading-relaxed">
+                <p className="text-gray-700 leading-relaxed">
                   {feature.description}
                 </p>
               </CardContent>

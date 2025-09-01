@@ -1,68 +1,116 @@
 import { useState } from 'react';
 import { useProducts, useProductMutations } from '@/hooks/use-products';
+import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Search, 
-  Filter,
-  Package,
-  Eye,
-  Upload
-} from 'lucide-react';
-import { Product } from '@/types/product';
-import { useProductState } from '@/hooks/use-products';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { Plus, Edit, Trash2, X, Image as ImageIcon } from 'lucide-react';
+import { formatPriceSimple } from '@/utils/currency';
 
 const Products = () => {
-  const { data: products = [], isLoading } = useProducts();
-  const { createProduct, updateProduct, deleteProduct, isCreating, isUpdating, isDeleting } = useProductMutations();
-  const { product, updateProduct: updateLocalProduct, resetProduct } = useProductState();
+  const { 
+    data: products = [], 
+    isLoading,
+    teams,
+    equipmentTypes,
+    productTypes,
+    sizes,
+    colors
+  } = useProducts();
   
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTeam, setSelectedTeam] = useState('');
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const { createProduct, updateProduct, deleteProduct, isCreating, isUpdating, isDeleting } = useProductMutations();
+  
+  const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-
-  // Filter products
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.team.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesTeam = !selectedTeam || product.team === selectedTeam;
-    return matchesSearch && matchesTeam;
+  
+  // Estado del formulario
+  const [formData, setFormData] = useState({
+    team: '',
+    equipmentType: 'local' as 'local' | 'visitante' | 'tercera' | 'alternativa' | 'champions',
+    productType: 'fan' as 'fan' | 'player',
+    name: '',
+    description: '',
+    price: 0,
+    playerPrice: 0,
+    images: [''],
+    sizes: [] as ('S' | 'M' | 'L' | 'XL' | 'XXL')[],
+    primaryColor: '',
+    isActive: true
   });
 
-  // Get unique teams
-  const teams = [...new Set(products.map(p => p.team))];
-
-  const handleCreateProduct = async () => {
-    try {
-      await createProduct(product as Omit<Product, 'id' | 'createdAt' | 'updatedAt'>);
-      setIsCreateDialogOpen(false);
-      resetProduct();
-    } catch (error) {
-      console.error('Error creating product:', error);
+  // Inicializar formulario cuando se edita un producto
+  const initializeForm = (product?: Product) => {
+    if (product) {
+      setFormData({
+        team: product.team,
+        equipmentType: product.equipmentType,
+        productType: product.productType,
+        name: product.name,
+        description: product.description || '',
+        price: product.price,
+        playerPrice: product.playerPrice || product.price,
+        images: product.images?.length ? [...product.images] : [''],
+        sizes: product.sizes || [],
+        primaryColor: product.primaryColor,
+        isActive: product.isActive
+      });
+    } else {
+      setFormData({
+        team: '',
+        equipmentType: 'local',
+        productType: 'fan',
+        name: '',
+        description: '',
+        price: 0,
+        playerPrice: 0,
+        images: [''],
+        sizes: [],
+        primaryColor: '',
+        isActive: true
+      });
     }
   };
 
-  const handleEditProduct = async () => {
+  const handleCreateProduct = async () => {
+    try {
+      const productData = {
+        ...formData,
+        images: formData.images.filter(img => img.trim() !== ''),
+        playerPrice: formData.productType === 'player' ? formData.playerPrice : formData.price
+      };
+      
+      await createProduct(productData);
+      setShowForm(false);
+      initializeForm();
+    } catch (error) {
+      console.error('Error creating product:', error);
+      alert('Error al crear el producto. Por favor intenta de nuevo.');
+    }
+  };
+
+  const handleUpdateProduct = async () => {
     if (!editingProduct) return;
     
     try {
-      await updateProduct({ id: editingProduct.id, updates: product });
-      setIsEditDialogOpen(false);
+      const productData = {
+        ...formData,
+        images: formData.images.filter(img => img.trim() !== ''),
+        playerPrice: formData.productType === 'player' ? formData.playerPrice : formData.price
+      };
+      
+      await updateProduct({ id: editingProduct.id, updates: productData });
+      setShowForm(false);
       setEditingProduct(null);
-      resetProduct();
+      initializeForm();
     } catch (error) {
       console.error('Error updating product:', error);
+      alert('Error al actualizar el producto. Por favor intenta de nuevo.');
     }
   };
 
@@ -72,373 +120,463 @@ const Products = () => {
         await deleteProduct(productId);
       } catch (error) {
         console.error('Error deleting product:', error);
+        alert('Error al eliminar el producto. Por favor intenta de nuevo.');
       }
     }
   };
 
-  const openEditDialog = (product: Product) => {
+  const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
-    updateLocalProduct(product);
-    setIsEditDialogOpen(true);
+    initializeForm(product);
+    setShowForm(true);
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      updateLocalProduct({ image: imageUrl });
+  const handleAddNew = () => {
+    setEditingProduct(null);
+    initializeForm();
+    setShowForm(true);
+  };
+
+  const handleCancelForm = () => {
+    setShowForm(false);
+    setEditingProduct(null);
+    initializeForm();
+  };
+
+  const handleInputChange = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleImageChange = (index: number, value: string) => {
+    const newImages = [...formData.images];
+    newImages[index] = value;
+    setFormData(prev => ({ ...prev, images: newImages }));
+  };
+
+  const addImageField = () => {
+    if (formData.images.length < 6) {
+      setFormData(prev => ({ ...prev, images: [...prev.images, ''] }));
     }
   };
 
-  if (isLoading) {
+  const removeImageField = (index: number) => {
+    if (formData.images.length > 1) {
+      const newImages = formData.images.filter((_, i) => i !== index);
+      setFormData(prev => ({ ...prev, images: newImages }));
+    }
+  };
+
+  const handleSizeToggle = (size: 'S' | 'M' | 'L' | 'XL' | 'XXL') => {
+    setFormData(prev => ({
+      ...prev,
+      sizes: prev.sizes.includes(size)
+        ? prev.sizes.filter(s => s !== size)
+        : [...prev.sizes, size]
+    }));
+  };
+
+  const generateProductName = () => {
+    if (formData.team && formData.equipmentType && formData.productType) {
+      const equipmentTypeText = {
+        local: 'Local',
+        visitante: 'Visitante',
+        tercera: 'Tercera',
+        alternativa: 'Alternativa',
+        champions: 'Champions'
+      }[formData.equipmentType] || formData.equipmentType;
+      
+      const productTypeText = formData.productType === 'player' ? 'Jugador' : 'Fan';
+      
+      const name = `${formData.team} 2024/25 - ${equipmentTypeText} - ${productTypeText}`;
+      setFormData(prev => ({ ...prev, name }));
+    }
+  };
+
+  // Formulario completo para crear/editar productos
+  if (showForm) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">Productos</h1>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardHeader className="pb-2">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-              </CardHeader>
-              <CardContent>
-                <div className="h-32 bg-gray-200 rounded mb-3"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      <div className="container mx-auto px-4 py-6">
+        <Card className="bg-white border-gray-200 shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-gray-900">
+              {editingProduct ? 'Editar Producto' : 'Agregar Nuevo Producto'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {/* Información básica */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="team">Equipo *</Label>
+                  <Select value={formData.team} onValueChange={(value) => handleInputChange('team', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar equipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {teams.map(team => (
+                        <SelectItem key={team} value={team}>{team}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="equipmentType">Tipo de Equipación *</Label>
+                  <Select value={formData.equipmentType} onValueChange={(value) => handleInputChange('equipmentType', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar equipación" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {equipmentTypes.map(type => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="productType">Tipo de Producto *</Label>
+                  <Select value={formData.productType} onValueChange={(value) => handleInputChange('productType', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {productTypes.map(type => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="primaryColor">Color Principal *</Label>
+                  <Select value={formData.primaryColor} onValueChange={(value) => handleInputChange('primaryColor', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar color" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {colors.map(color => (
+                        <SelectItem key={color} value={color}>{color}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Nombre del producto */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label htmlFor="name">Nombre del Producto *</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={generateProductName}
+                    className="text-xs"
+                  >
+                    Generar Nombre
+                  </Button>
+                </div>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  placeholder="Nombre del producto"
+                />
+              </div>
+
+              {/* Descripción */}
+              <div>
+                <Label htmlFor="description">Descripción</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  placeholder="Descripción del producto (opcional)"
+                  rows={3}
+                />
+              </div>
+
+              {/* Precios */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="price">Precio Fan *</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    value={formData.price}
+                    onChange={(e) => handleInputChange('price', Number(e.target.value))}
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="playerPrice">Precio Jugador *</Label>
+                  <Input
+                    id="playerPrice"
+                    type="number"
+                    value={formData.playerPrice}
+                    onChange={(e) => handleInputChange('playerPrice', Number(e.target.value))}
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+
+              {/* Imágenes */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label>Imágenes (máximo 6)</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addImageField}
+                    disabled={formData.images.length >= 6}
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Agregar Imagen
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {formData.images.map((image, index) => (
+                    <div key={index} className="flex gap-2">
+                      <div className="flex-1">
+                        <Input
+                          value={image}
+                          onChange={(e) => handleImageChange(index, e.target.value)}
+                          placeholder={`URL de imagen ${index + 1}`}
+                        />
+                      </div>
+                      {formData.images.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeImageField(index)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                {/* Vista previa de imágenes */}
+                <div className="mt-4">
+                  <Label>Vista Previa de Imágenes:</Label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 mt-2">
+                    {formData.images.filter(img => img.trim() !== '').map((image, index) => (
+                      <div key={index} className="relative aspect-square border border-gray-200 rounded-lg overflow-hidden">
+                        <img
+                          src={image}
+                          alt={`Vista previa ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = '/placeholder.svg';
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Tallas */}
+              <div>
+                <Label className="mb-2 block">Tallas Disponibles *</Label>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                  {sizes.map(size => (
+                    <div key={size} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`size-${size}`}
+                        checked={formData.sizes.includes(size)}
+                        onCheckedChange={() => handleSizeToggle(size)}
+                      />
+                      <Label htmlFor={`size-${size}`} className="text-sm">{size}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Estado */}
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="isActive"
+                  checked={formData.isActive}
+                  onCheckedChange={(checked) => handleInputChange('isActive', checked)}
+                />
+                <Label htmlFor="isActive">Producto Activo</Label>
+              </div>
+
+              {/* Botones */}
+              <div className="flex gap-3 pt-4 border-t border-gray-200">
+                <Button
+                  variant="outline"
+                  onClick={handleCancelForm}
+                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={editingProduct ? handleUpdateProduct : handleCreateProduct}
+                  disabled={isCreating || isUpdating}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-black"
+                >
+                  {isCreating || isUpdating ? 'Guardando...' : (editingProduct ? 'Actualizar' : 'Crear')} Producto
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
+  // Vista principal con lista de productos
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-white">Productos</h1>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button 
-              onClick={() => resetProduct()}
-              className="bg-gradient-to-r from-[#FFD100] to-[#FFB800] text-black font-semibold hover:from-[#FFB800] hover:to-[#FFD100] transition-all duration-300 shadow-lg hover:shadow-xl"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Agregar Producto
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Crear Nuevo Producto</DialogTitle>
-              <DialogDescription>
-                Completa la información del nuevo producto
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nombre del Producto *</Label>
-                <Input
-                  id="name"
-                  value={product.name}
-                  onChange={(e) => updateLocalProduct({ name: e.target.value })}
-                  placeholder="Camisola Local Barcelona 2024/25"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="team">Equipo *</Label>
-                <Input
-                  id="team"
-                  value={product.team}
-                  onChange={(e) => updateLocalProduct({ team: e.target.value })}
-                  placeholder="FC Barcelona"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="price">Precio Fan *</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  value={product.price}
-                  onChange={(e) => updateLocalProduct({ price: Number(e.target.value) })}
-                  placeholder="385"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="playerPrice">Precio Jugador</Label>
-                <Input
-                  id="playerPrice"
-                  type="number"
-                  value={product.playerPrice || ''}
-                  onChange={(e) => updateLocalProduct({ playerPrice: Number(e.target.value) })}
-                  placeholder="450"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="season">Temporada *</Label>
-                <Input
-                  id="season"
-                  value={product.season}
-                  onChange={(e) => updateLocalProduct({ season: e.target.value })}
-                  placeholder="2024/25"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="competition">Competencia *</Label>
-                <Input
-                  id="competition"
-                  value={product.competition}
-                  onChange={(e) => updateLocalProduct({ competition: e.target.value })}
-                  placeholder="Liga Española"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="rating">Rating</Label>
-                <Input
-                  id="rating"
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  max="5"
-                  value={product.rating}
-                  onChange={(e) => updateLocalProduct({ rating: Number(e.target.value) })}
-                  placeholder="4.8"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="reviews">Número de Reseñas</Label>
-                <Input
-                  id="reviews"
-                  type="number"
-                  min="0"
-                  value={product.reviews || 0}
-                  onChange={(e) => updateLocalProduct({ reviews: Number(e.target.value) })}
-                  placeholder="25"
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="description">Descripción</Label>
-              <Textarea
-                id="description"
-                value={product.description || ''}
-                onChange={(e) => updateLocalProduct({ description: e.target.value })}
-                placeholder="Descripción del producto..."
-                rows={3}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Imagen del Producto</Label>
-              <div className="flex items-center space-x-4">
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="flex-1"
-                />
-                {product.image && (
-                  <div className="w-20 h-20 border rounded-lg overflow-hidden">
-                    <img 
-                      src={product.image} 
-                      alt="Preview" 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                Cancelar
-              </Button>
-              <Button onClick={handleCreateProduct} disabled={isCreating}>
-                {isCreating ? 'Creando...' : 'Crear Producto'}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {/* Filters */}
-      <Card className="bg-gray-900 border-gray-800 shadow-xl">
-        <CardContent className="pt-6">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="Buscar productos..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-[#FFD100] focus:ring-[#FFD100]"
-                />
-              </div>
-            </div>
-            <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-              <SelectTrigger className="w-full sm:w-48 bg-gray-800 border-gray-700 text-white focus:border-[#FFD100] focus:ring-[#FFD100]">
-                <SelectValue placeholder="Filtrar por equipo" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-700">
-                <SelectItem value="" className="text-white hover:bg-gray-700">Todos los equipos</SelectItem>
-                {teams.map((team) => (
-                  <SelectItem key={team} value={team} className="text-white hover:bg-gray-700">{team}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Products Grid */}
-      {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((product) => (
-            <Card key={product.id} className="overflow-hidden">
-              <div className="aspect-square bg-gray-100 relative">
-                {product.image ? (
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Package className="h-12 w-12 text-gray-400" />
-                  </div>
-                )}
-                <div className="absolute top-2 right-2 flex space-x-1">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => openEditDialog(product)}
-                  >
-                    <Edit className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => handleDeleteProduct(product.id)}
-                    disabled={isDeleting}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
-              
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                  {product.name}
-                </h3>
-                <p className="text-gray-600 text-sm mb-2">{product.team}</p>
-                <div className="flex items-center justify-between mb-3">
-                  <Badge variant="outline">${product.price}</Badge>
-                  <Badge variant="secondary">{product.season}</Badge>
-                </div>
-                <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  <span>⭐ {product.rating}</span>
-                  <span>•</span>
-                  <span>{product.reviews} reseñas</span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <Card className="text-center py-12 bg-gray-900 border-gray-800 shadow-xl">
-          <CardContent>
-            <Package className="mx-auto h-16 w-16 text-[#FFD100] mb-4" />
-            <h3 className="text-lg font-medium text-white mb-2">
-              {searchTerm || selectedTeam ? 'No se encontraron productos' : 'No hay productos'}
-            </h3>
-            <p className="text-gray-400 mb-4">
-              {searchTerm || selectedTeam 
-                ? 'Intenta ajustar los filtros de búsqueda'
-                : 'Comienza agregando tu primer producto al catálogo'
-              }
+    <div className="container mx-auto px-4 py-6">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Productos</h1>
+            <p className="text-gray-600 mt-1">
+              Gestiona el catálogo de camisolas ({products.length} productos)
             </p>
-            {!searchTerm && !selectedTeam && (
-              <Button 
-                onClick={() => setIsCreateDialogOpen(true)}
-                className="bg-gradient-to-r from-[#FFD100] to-[#FFB800] text-black font-semibold hover:from-[#FFB800] hover:to-[#FFD100] transition-all duration-300 shadow-lg hover:shadow-xl"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Agregar Producto
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      )}
+          </div>
+          <Button onClick={handleAddNew} className="bg-yellow-500 hover:bg-yellow-600 text-black">
+            <Plus className="h-4 w-4 mr-2" />
+            Agregar Producto
+          </Button>
+        </div>
 
-      {/* Edit Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Editar Producto</DialogTitle>
-            <DialogDescription>
-              Modifica la información del producto
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="edit-name">Nombre del Producto</Label>
-              <Input
-                id="edit-name"
-                value={product.name}
-                onChange={(e) => updateLocalProduct({ name: e.target.value })}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="edit-team">Equipo</Label>
-              <Input
-                id="edit-team"
-                value={product.team}
-                onChange={(e) => updateLocalProduct({ team: e.target.value })}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="edit-price">Precio</Label>
-              <Input
-                id="edit-price"
-                type="number"
-                value={product.price}
-                onChange={(e) => updateLocalProduct({ price: Number(e.target.value) })}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="edit-season">Temporada</Label>
-              <Input
-                id="edit-season"
-                value={product.season}
-                onChange={(e) => updateLocalProduct({ season: e.target.value })}
-              />
-            </div>
+        {/* Lista de Productos */}
+        {isLoading ? (
+          <div className="text-center py-8">
+            <p className="text-gray-600">Cargando productos...</p>
           </div>
-          
-          <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleEditProduct} disabled={isUpdating}>
-              {isUpdating ? 'Guardando...' : 'Guardar Cambios'}
-            </Button>
+        ) : products.length === 0 ? (
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardContent className="p-12 text-center">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No hay productos</h3>
+              <p className="text-gray-600 mb-4">
+                Comienza agregando el primer producto al catálogo.
+              </p>
+              <Button onClick={handleAddNew} className="bg-yellow-500 hover:bg-yellow-600 text-black">
+                <Plus className="h-4 w-4 mr-2" />
+                Agregar Primer Producto
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product) => (
+              <Card key={product.id} className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  {/* Imagen */}
+                  <div className="relative mb-4">
+                    <img
+                      src={product.images?.[0] || '/placeholder.svg'}
+                      alt={product.name}
+                      className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder.svg';
+                      }}
+                    />
+                    <div className="absolute top-2 right-2 flex gap-1">
+                      {!product.isActive && (
+                        <Badge variant="secondary" className="bg-gray-500 text-white text-xs">
+                          Inactivo
+                        </Badge>
+                      )}
+                      <Badge 
+                        variant="secondary" 
+                        className={`text-xs ${product.productType === 'player' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}`}
+                      >
+                        {product.productType === 'player' ? 'Jugador' : 'Fan'}
+                      </Badge>
+                    </div>
+                    {/* Indicador de múltiples imágenes */}
+                    {product.images && product.images.length > 1 && (
+                      <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                        {product.images.length} imágenes
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Información del Producto */}
+                  <div className="space-y-3">
+                    <div>
+                      <h3 className="font-semibold text-gray-900 line-clamp-2 mb-1">
+                        {product.name}
+                      </h3>
+                      <p className="text-sm text-gray-600">{product.team}</p>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline" className="text-xs border-gray-300 text-gray-700">
+                        {product.equipmentType === 'local' ? 'Local' : 
+                         product.equipmentType === 'visitante' ? 'Visitante' :
+                         product.equipmentType === 'tercera' ? 'Tercera' :
+                         product.equipmentType === 'alternativa' ? 'Alternativa' :
+                         product.equipmentType === 'champions' ? 'Champions' : product.equipmentType}
+                      </Badge>
+                      <span className="text-lg font-bold text-yellow-600">
+                        {formatPriceSimple(product.price)}
+                      </span>
+                    </div>
+
+                    {/* Tallas */}
+                    <div className="flex flex-wrap gap-1">
+                      {product.sizes?.map(size => (
+                        <Badge key={size} variant="secondary" className="text-xs bg-gray-100 text-gray-700">
+                          {size}
+                        </Badge>
+                      ))}
+                    </div>
+
+                    {/* Color */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500">Color:</span>
+                      <Badge variant="outline" className="text-xs border-gray-300 text-gray-700">
+                        {product.primaryColor}
+                      </Badge>
+                    </div>
+
+                    {/* Acciones */}
+                    <div className="flex gap-2 pt-2 border-t border-gray-100">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditProduct(product)}
+                        className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
+                      >
+                        <Edit className="h-3 w-3 mr-1" />
+                        Editar
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteProduct(product.id)}
+                        className="border-red-300 text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        </DialogContent>
-      </Dialog>
+        )}
+      </div>
     </div>
   );
 };

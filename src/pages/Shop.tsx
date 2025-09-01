@@ -28,7 +28,7 @@ const Shop = () => {
   const sortBy = searchParams.get('sort') || 'name';
   const onSale = searchParams.get('onSale') === 'true';
   
-  const { data: products = [], isLoading, error } = useProducts();
+  const { data: products = [], isLoading } = useProducts();
 
   // Update URL params when filters change
   const updateFilters = (updates: Record<string, string | number[]>) => {
@@ -50,14 +50,13 @@ const Shop = () => {
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.team.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesTeam = !selectedTeam || product.team === selectedTeam;
-      const matchesCompetition = !selectedCompetition || product.competition === selectedCompetition;
-      const matchesSeason = !selectedSeason || product.season === selectedSeason;
+      const matchesEquipmentType = !selectedCompetition || product.equipmentType === selectedCompetition;
       const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
-      const matchesSale = !onSale || product.originalPrice;
+      const matchesActive = product.isActive;
       
-      return matchesSearch && matchesTeam && matchesCompetition && matchesSeason && matchesPrice && matchesSale;
+      return matchesSearch && matchesTeam && matchesEquipmentType && matchesPrice && matchesActive;
     });
-  }, [products, searchTerm, selectedTeam, selectedCompetition, selectedSeason, priceRange, onSale]);
+  }, [products, searchTerm, selectedTeam, selectedCompetition, priceRange]);
 
   // Sort products
   const sortedProducts = useMemo(() => {
@@ -67,10 +66,8 @@ const Shop = () => {
           return a.price - b.price;
         case 'price-high':
           return b.price - a.price;
-        case 'rating':
-          return b.rating - a.rating;
         case 'newest':
-          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         case 'name':
         default:
           return a.name.localeCompare(b.name);
@@ -80,33 +77,32 @@ const Shop = () => {
 
   // Get unique filter options
   const teams = useMemo(() => ['', ...new Set(products.map(p => p.team))], [products]);
-  const competitions = useMemo(() => ['', ...new Set(products.map(p => p.competition))], [products]);
-  const seasons = useMemo(() => ['', ...new Set(products.map(p => p.season))], [products]);
+  const equipmentTypes = useMemo(() => ['', ...new Set(products.map(p => p.equipmentType))], [products]);
 
   const clearAllFilters = () => {
     setSearchParams({});
     setShowFilters(false);
   };
 
-  const hasActiveFilters = searchTerm || selectedTeam || selectedCompetition || selectedSeason || 
-    priceRange[0] !== 0 || priceRange[1] !== 500 || onSale;
+  const hasActiveFilters = searchTerm || selectedTeam || selectedCompetition || 
+    priceRange[0] !== 0 || priceRange[1] !== 500;
 
-  if (error) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-background relative">
+      <div className="min-h-screen bg-white relative">
         <LogoWatermark />
         <Header />
         <main className="pt-8">
           <div className="container mx-auto px-4">
             <div className="text-center py-12">
               <div className="relative mx-auto mb-6">
-                <div className="absolute inset-0 bg-gradient-to-br from-red-400/30 to-red-600/30 rounded-full blur-xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-red-200 to-red-400 rounded-full blur-xl"></div>
                 <div className="relative bg-gradient-to-br from-red-500 to-red-600 p-6 rounded-full">
                   <Package className="h-16 w-16 text-white" />
                 </div>
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Error al cargar productos</h2>
-              <p className="text-white/70">No se pudieron cargar los productos. Intenta nuevamente más tarde.</p>
+              <h2 className="text-2xl font-bold text-black mb-2">Error al cargar productos</h2>
+              <p className="text-gray-600">No se pudieron cargar los productos. Intenta nuevamente más tarde.</p>
             </div>
           </div>
         </main>
@@ -116,7 +112,7 @@ const Shop = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-white relative">
       <LogoWatermark />
       <Header />
       
@@ -130,7 +126,7 @@ const Shop = () => {
         </div>
         <div className="relative z-10 text-center px-4">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">
-            Tienda de <span className="accent-gradient bg-gradient-to-r from-accent via-yellow-400 to-yellow-500 bg-clip-text text-transparent font-display">Camisolas</span>
+            Tienda de <span className="text-yellow-500 font-display">Camisolas</span>
           </h1>
           <p className="text-xl text-white/90 max-w-3xl mx-auto">
             Descubre las mejores camisolas de fútbol con personalización completa. 
@@ -143,100 +139,99 @@ const Shop = () => {
         <div className="container mx-auto px-4">
           {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+            <Card className="bg-white border-gray-200 shadow-lg">
               <CardContent className="p-4 text-center">
                 <div className="flex items-center justify-center mb-2">
-                  <Package className="h-6 w-6 text-accent" />
+                  <Package className="h-6 w-6 text-yellow-600" />
                 </div>
-                <p className="text-2xl font-bold text-white">{products.length}</p>
-                <p className="text-white/70 text-sm">Camisolas</p>
+                <p className="text-2xl font-bold text-black">{products.length}</p>
+                <p className="text-gray-600 text-sm">Camisolas</p>
               </CardContent>
             </Card>
             
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+            <Card className="bg-white border-gray-200 shadow-lg">
               <CardContent className="p-4 text-center">
                 <div className="flex items-center justify-center mb-2">
-                  <Star className="h-6 w-6 text-yellow-400" />
+                  <Star className="h-6 w-6 text-yellow-500" />
                 </div>
-                <p className="text-2xl font-bold text-white">{teams.length - 1}</p>
-                <p className="text-white/70 text-sm">Equipos</p>
+                <p className="text-2xl font-bold text-black">{teams.length - 1}</p>
+                <p className="text-gray-600 text-sm">Equipos</p>
               </CardContent>
             </Card>
             
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+            <Card className="bg-white border-gray-200 shadow-lg">
               <CardContent className="p-4 text-center">
                 <div className="flex items-center justify-center mb-2">
-                  <TrendingUp className="h-6 w-6 text-green-400" />
+                  <TrendingUp className="h-6 w-6 text-green-500" />
                 </div>
-                <p className="text-2xl font-bold text-white">{products.filter(p => p.originalPrice).length}</p>
-                <p className="text-white/70 text-sm">Ofertas</p>
+                <p className="text-2xl font-bold text-black">{products.filter(p => p.playerPrice && p.playerPrice > p.price).length}</p>
+                <p className="text-gray-600 text-sm">Ofertas</p>
               </CardContent>
             </Card>
             
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+            <Card className="bg-white border-gray-200 shadow-lg">
               <CardContent className="p-4 text-center">
                 <div className="flex items-center justify-center mb-2">
-                  <Zap className="h-6 w-6 text-purple-400" />
+                  <Zap className="h-6 w-6 text-purple-500" />
                 </div>
-                <p className="text-2xl font-bold text-white">{competitions.length - 1}</p>
-                <p className="text-white/70 text-sm">Competiciones</p>
+                <p className="text-2xl font-bold text-black">{products.filter(p => p.productType === 'player').length}</p>
+                <p className="text-gray-600 text-sm">Nuevos</p>
               </CardContent>
             </Card>
           </div>
 
-          {/* Filters and Controls */}
-          <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20">
-            <CardContent className="pt-6">
-              {/* Top Row - Search and View */}
-              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
-                <div className="flex items-center gap-4 flex-1 max-w-2xl">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 h-4 w-4" />
-                    <Input
-                      placeholder="Buscar camisolas, equipos..."
-                      value={searchTerm}
-                      onChange={(e) => updateFilters({ search: e.target.value })}
-                      className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20 focus:border-accent"
-                    />
-                  </div>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowFilters(!showFilters)}
-                    className="border-white/30 text-white hover:bg-accent/20 hover:border-accent/60"
-                  >
-                    <Filter className="h-4 w-4 mr-2" />
-                    Filtros
-                    {hasActiveFilters && (
-                      <Badge variant="secondary" className="ml-2 bg-accent text-background">
-                        {[searchTerm, selectedTeam, selectedCompetition, selectedSeason, 
-                          priceRange[0] !== 0 || priceRange[1] !== 500, onSale].filter(Boolean).length}
-                      </Badge>
-                    )}
-                  </Button>
-                  
+          {/* Search and Filters */}
+          <div className="mb-8">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
+              {/* Search */}
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                <Input
+                  type="text"
+                  placeholder="Buscar camisolas, equipos..."
+                  value={searchTerm}
+                  onChange={(e) => updateFilters({ search: e.target.value })}
+                  className="pl-10 bg-white border-gray-300 text-black placeholder:text-gray-500 focus:border-yellow-500"
+                />
+              </div>
+
+              {/* Filter Controls */}
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="border-gray-300 text-gray-700 hover:bg-yellow-50 hover:border-yellow-500"
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filtros
                   {hasActiveFilters && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={clearAllFilters}
-                      className="text-white/70 hover:text-white hover:bg-white/10"
-                    >
-                      <X className="h-4 w-4 mr-2" />
-                      Limpiar
-                    </Button>
+                    <Badge variant="secondary" className="ml-2 bg-yellow-500 text-black">
+                      {[searchTerm, selectedTeam, selectedCompetition, selectedSeason, priceRange[0] !== 0 || priceRange[1] !== 500, onSale].filter(Boolean).length}
+                    </Badge>
                   )}
-                </div>
+                </Button>
                 
-                <div className="flex items-center gap-4">
-                  <span className="text-white/70 text-sm">Vista:</span>
-                  <div className="flex border border-white/20 rounded-lg overflow-hidden">
+                {hasActiveFilters && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearAllFilters}
+                    className="text-gray-600 hover:text-black hover:bg-gray-100"
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Limpiar
+                  </Button>
+                )}
+                
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600 text-sm">Vista:</span>
+                  <div className="flex border border-gray-300 rounded-lg overflow-hidden">
                     <Button
                       variant={viewMode === 'grid' ? 'default' : 'ghost'}
                       size="sm"
                       onClick={() => setViewMode('grid')}
-                      className={`rounded-none ${viewMode === 'grid' ? 'bg-accent text-background' : 'text-white hover:bg-white/10'}`}
+                      className={`rounded-none ${viewMode === 'grid' ? 'bg-yellow-500 text-black' : 'text-gray-700 hover:bg-gray-100'}`}
                     >
                       <Grid className="h-4 w-4" />
                     </Button>
@@ -244,73 +239,64 @@ const Shop = () => {
                       variant={viewMode === 'list' ? 'default' : 'ghost'}
                       size="sm"
                       onClick={() => setViewMode('list')}
-                      className={`rounded-none ${viewMode === 'list' ? 'bg-accent text-background' : 'text-white hover:bg-white/10'}`}
+                      className={`rounded-none ${viewMode === 'list' ? 'bg-yellow-500 text-black' : 'text-gray-700 hover:bg-gray-100'}`}
                     >
                       <List className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
               </div>
-
-              {/* Filters Panel */}
-              {showFilters && (
-                <div className="border-t border-white/20 pt-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            </div>
+            
+            {/* Filters Panel */}
+            {showFilters && (
+              <Card className="bg-white border-gray-200 shadow-lg mb-6">
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {/* Team Filter */}
                     <div>
-                      <label className="block text-white font-medium mb-2">Equipo</label>
+                      <label className="block text-black font-medium mb-3">Equipo</label>
                       <Select value={selectedTeam} onValueChange={(value) => updateFilters({ team: value })}>
-                        <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                        <SelectTrigger className="bg-white border-gray-300 text-black">
                           <SelectValue placeholder="Todos los equipos" />
                         </SelectTrigger>
-                        <SelectContent className="bg-background/95 border-white/20">
+                        <SelectContent className="bg-white border-gray-300">
                           {teams.map(team => (
-                            <SelectItem key={team} value={team} className="text-white hover:bg-accent/10">
+                            <SelectItem key={team} value={team} className="text-black hover:bg-yellow-50">
                               {team || 'Todos los equipos'}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
-
+                    
                     {/* Competition Filter */}
                     <div>
-                      <label className="block text-white font-medium mb-2">Competición</label>
+                      <label className="block text-black font-medium mb-3">Competición</label>
                       <Select value={selectedCompetition} onValueChange={(value) => updateFilters({ competition: value })}>
-                        <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                        <SelectTrigger className="bg-white border-gray-300 text-black">
                           <SelectValue placeholder="Todas las competiciones" />
                         </SelectTrigger>
-                        <SelectContent className="bg-background/95 border-white/20">
-                          {competitions.map(competition => (
-                            <SelectItem key={competition} value={competition} className="text-white hover:bg-accent/10">
-                              {competition || 'Todas las competiciones'}
-                            </SelectItem>
-                          ))}
+                        <SelectContent className="bg-white border-gray-300">
+                                                  {equipmentTypes.map(equipmentType => (
+                          <SelectItem key={equipmentType} value={equipmentType} className="text-black hover:bg-yellow-50">
+                            {equipmentType === 'local' ? 'Local' : 
+                             equipmentType === 'visitante' ? 'Visitante' :
+                             equipmentType === 'tercera' ? 'Tercera' :
+                             equipmentType === 'alternativa' ? 'Alternativa' :
+                             equipmentType === 'champions' ? 'Champions' : equipmentType || 'Todas las equipaciones'}
+                          </SelectItem>
+                        ))}
                         </SelectContent>
                       </Select>
                     </div>
+                    
 
-                    {/* Season Filter */}
-                    <div>
-                      <label className="block text-white font-medium mb-2">Temporada</label>
-                      <Select value={selectedSeason} onValueChange={(value) => updateFilters({ season: value })}>
-                        <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                          <SelectValue placeholder="Todas las temporadas" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-background/95 border-white/20">
-                          {seasons.map(season => (
-                            <SelectItem key={season} value={season} className="text-white hover:bg-accent/10">
-                              {season || 'Todas las temporadas'}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
+                    
                     {/* Price Range Filter */}
                     <div>
-                      <label className="block text-white font-medium mb-2">
-                        Precio: Q{priceRange[0]} - Q{priceRange[1]}
+                      <label className="block text-black font-medium mb-3">
+                        Rango de Precio: Q{priceRange[0]} - Q{priceRange[1]}
                       </label>
                       <Slider
                         value={priceRange}
@@ -321,83 +307,50 @@ const Shop = () => {
                         className="w-full"
                       />
                     </div>
-
-                    {/* Sort By */}
-                    <div>
-                      <label className="block text-white font-medium mb-2">Ordenar por</label>
-                      <Select value={sortBy} onValueChange={(value) => updateFilters({ sort: value })}>
-                        <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-background/95 border-white/20">
-                          <SelectItem value="name" className="text-white hover:bg-accent/10">Nombre A-Z</SelectItem>
-                          <SelectItem value="price-low" className="text-white hover:bg-accent/10">Precio: Menor a Mayor</SelectItem>
-                          <SelectItem value="price-high" className="text-white hover:bg-accent/10">Precio: Mayor a Menor</SelectItem>
-                          <SelectItem value="rating" className="text-white hover:bg-accent/10">Mejor Valorados</SelectItem>
-                          <SelectItem value="newest" className="text-white hover:bg-accent/10">Más Recientes</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
                   </div>
-
+                  
                   {/* Additional Filters */}
-                  <div className="mt-4 pt-4 border-t border-white/20">
-                    <div className="flex items-center gap-4">
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          checked={onSale}
-                          onChange={(e) => updateFilters({ onSale: e.target.checked ? 'true' : 'false' })}
-                          className="rounded border-white/30 text-accent focus:ring-accent"
-                        />
-                        <span className="text-white text-sm">Solo ofertas</span>
-                      </label>
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <div className="flex flex-wrap gap-4">
+
+                      
+                      <Button
+                        variant={sortBy === 'newest' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => updateFilters({ sort: sortBy === 'newest' ? 'name' : 'newest' })}
+                        className={sortBy === 'newest' ? 'bg-yellow-500 text-black' : 'border-gray-300 text-gray-700 hover:bg-yellow-50'}
+                      >
+                        <Clock className="h-4 w-4 mr-2" />
+                        Más Recientes
+                      </Button>
                     </div>
                   </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Results Count */}
-          <div className="text-center mb-6">
-            <p className="text-white/80">
-              Mostrando {filteredProducts.length} de {products.length} camisolas
-              {hasActiveFilters && (
-                <span className="text-accent"> (filtradas)</span>
-              )}
-            </p>
+                </CardContent>
+              </Card>
+            )}
+            
+            {/* Results Count */}
+            <div className="text-center mb-6">
+              <p className="text-gray-700">
+                Mostrando {filteredProducts.length} de {products.length} camisolas
+                {hasActiveFilters && (
+                  <span className="text-yellow-600"> (filtradas)</span>
+                )}
+              </p>
+            </div>
           </div>
 
           {/* Products Grid */}
           {isLoading ? (
             <div className="text-center py-12">
               <div className="relative mx-auto mb-6">
-                <div className="absolute inset-0 bg-gradient-to-br from-accent/30 to-yellow-500/30 rounded-full blur-xl animate-pulse"></div>
-                <div className="relative animate-spin rounded-full h-16 w-16 border-4 border-transparent border-t-accent border-r-yellow-500 shadow-2xl shadow-accent/25"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-200 to-yellow-400 rounded-full blur-xl animate-pulse"></div>
+                <div className="relative animate-spin rounded-full h-16 w-16 border-4 border-transparent border-t-yellow-500 border-r-yellow-600 shadow-2xl shadow-yellow-500/25"></div>
               </div>
-              <p className="text-white/80 text-lg">Cargando camisolas...</p>
-            </div>
-          ) : filteredProducts.length > 0 ? (
-            <div className="mb-12">
-              <ProductGrid products={sortedProducts} />
+              <p className="text-gray-700 text-lg">Cargando productos...</p>
             </div>
           ) : (
-            <div className="text-center py-12">
-              <div className="relative mx-auto mb-6">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-full blur-xl"></div>
-                <div className="relative bg-gradient-to-br from-white/20 to-white/10 p-6 rounded-full border border-white/20">
-                  <Package className="h-16 w-16 text-white/80 drop-shadow-lg" />
-                </div>
-              </div>
-              <h3 className="text-xl font-medium text-white mb-2">No se encontraron camisolas</h3>
-              <p className="text-white/60 mb-4">Intenta ajustar los filtros de búsqueda</p>
-              {hasActiveFilters && (
-                <Button onClick={clearAllFilters} variant="outline" className="border-white/30 text-white hover:bg-white/10">
-                  Limpiar filtros
-                </Button>
-              )}
-            </div>
+            <ProductGrid products={sortedProducts} />
           )}
         </div>
       </main>

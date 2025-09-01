@@ -2,17 +2,14 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { JerseysShowcase } from "@/components/sections/JerseysShowcase";
-import { FeaturesSection } from "@/components/sections/FeaturesSection";
-import backgroundImage from "@/assets/image.png";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <Header />
       <main>
         <HeroSection />
         <JerseysShowcase />
-        <FeaturesSection />
       </main>
       <Footer />
     </div>

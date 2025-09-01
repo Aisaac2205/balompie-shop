@@ -64,7 +64,7 @@ const Settings = () => {
   const [settings, setSettings] = useState<SiteSettings>({
     siteName: 'La Casa del Balompié',
     siteDescription: 'Tu tienda de confianza para camisolas de fútbol de alta calidad',
-    logo: '/logo.jpg',
+            logo: '/logo.png',
     favicon: '/favicon.ico',
     
     primaryColor: '#FFD100',
