@@ -10,3 +10,13 @@ restartPolicyType = "on_failure"
 [env]
 NODE_ENV = "production"
 PORT = "3000"
+
+# Métricas y monitoreo
+[monitoring]
+enabled = true
+metrics = ["cpu", "memory", "network", "disk"]
+
+# Configuración de logs
+[logs]
+retention = "7d"
+level = "info"

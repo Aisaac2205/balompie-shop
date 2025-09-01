@@ -1,0 +1,74 @@
+{
+  "metrics": {
+    "enabled": true,
+    "collectors": [
+      {
+        "name": "performance",
+        "type": "custom",
+        "interval": "30s",
+        "endpoints": [
+          "/api/health",
+          "/api/metrics"
+        ]
+      },
+      {
+        "name": "uptime",
+        "type": "uptime",
+        "interval": "1m"
+      },
+      {
+        "name": "response_time",
+        "type": "response_time",
+        "interval": "30s"
+      }
+    ]
+  },
+  "alerts": {
+    "enabled": true,
+    "rules": [
+      {
+        "name": "high_cpu",
+        "condition": "cpu > 80%",
+        "duration": "5m",
+        "action": "notify"
+      },
+      {
+        "name": "high_memory",
+        "condition": "memory > 85%",
+        "duration": "5m",
+        "action": "notify"
+      },
+      {
+        "name": "service_down",
+        "condition": "health_check_failed",
+        "duration": "2m",
+        "action": "restart"
+      }
+    ]
+  },
+  "dashboard": {
+    "enabled": true,
+    "widgets": [
+      {
+        "name": "CPU Usage",
+        "type": "line",
+        "metric": "cpu_percent"
+      },
+      {
+        "name": "Memory Usage",
+        "type": "line",
+        "metric": "memory_percent"
+      },
+      {
+        "name": "Response Time",
+        "type": "line",
+        "metric": "response_time_ms"
+      },
+      {
+        "name": "Request Rate",
+        "type": "counter",
+        "metric": "requests_per_second"
+      }
+    ]
+  }
+}
