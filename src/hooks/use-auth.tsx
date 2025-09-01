@@ -8,14 +8,8 @@ interface AuthStore extends AuthState {
   clearError: () => void;
 }
 
-// Mock admin user for development (replace with real authentication)
-const MOCK_ADMIN: AdminUser = {
-  id: '1',
-  email: 'admin@jerseyrealm.com',
-  name: 'Administrador',
-  role: 'super_admin',
-  createdAt: new Date('2024-01-01'),
-};
+// API base URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export const useAuth = create<AuthStore>()(
   persist(
@@ -29,35 +23,37 @@ export const useAuth = create<AuthStore>()(
         set({ isLoading: true, error: null });
         
         try {
-          // Simulate API call delay
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          // Mock authentication logic
-          if (credentials.email === 'admin@jerseyrealm.com' && credentials.password === 'admin123') {
-            const mockResponse: LoginResponse = {
-              user: MOCK_ADMIN,
-              token: 'mock-jwt-token-' + Date.now(),
-            };
-            
-            // Store token in localStorage
-            localStorage.setItem('admin_token', mockResponse.token);
-            
-            set({
-              user: mockResponse.user,
-              isAuthenticated: true,
-              isLoading: false,
-              error: null,
-            });
-            
-            return true;
-          } else {
+          const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(credentials),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
             set({
               isLoading: false,
-              error: 'Credenciales inválidas. Email: admin@jerseyrealm.com, Contraseña: admin123',
+              error: data.error || 'Error de autenticación',
             });
             return false;
           }
+
+          // Store token in localStorage
+          localStorage.setItem('admin_token', data.token);
+          
+          set({
+            user: data.user,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          });
+          
+          return true;
         } catch (error) {
+          console.error('Login error:', error);
           set({
             isLoading: false,
             error: 'Error de conexión. Intente nuevamente.',
