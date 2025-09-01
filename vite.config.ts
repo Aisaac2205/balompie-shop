@@ -14,6 +14,8 @@ export default defineConfig(({ mode }) => ({
     port: 3000,
     allowedHosts: [
       "healthcheck.railway.app",
+      "balompie-shop-production.up.railway.app",
+      "*.up.railway.app",
       "localhost",
       "127.0.0.1",
       "::1"
