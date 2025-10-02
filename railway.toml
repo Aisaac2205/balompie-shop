@@ -2,15 +2,15 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "npm run preview"
+startCommand = "npm start"
 healthcheckPath = "/"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
 
 [env]
 NODE_ENV = "production"
-PORT = "4173"
-VITE_API_URL = "https://backendbalompie-production.up.railway.app/api"
+PORT = "${{PORT}}"
+VITE_API_URL = "https://backend-balompie-production.up.railway.app/api"
 VITE_WHATSAPP_PHONE = "+50246907489"
 
 # Métricas y monitoreo
