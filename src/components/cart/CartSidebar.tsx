@@ -31,53 +31,44 @@ function CartItemComponent({ item, onUpdateQuantity, onRemove }: CartItemCompone
 
   return (
     <div
-      className={`flex gap-4 p-4 rounded-xl bg-white/5 border border-white/10 transition-all duration-300 ${
+      className={`rounded-xl bg-white/5 border border-white/10 p-3 transition-all duration-300 ${
         isRemoving ? "opacity-0 scale-95" : "opacity-100 scale-100"
       }`}
     >
-      {/* Product Image */}
-      <div className="relative flex-shrink-0">
-        <img
-          src={item.image}
-          alt={item.name}
-          className="w-16 h-16 object-cover rounded-lg border border-white/20"
-        />
-        {item.customization?.selectedPlayer?.shirtNumber && (
-          <div className="absolute -top-1 -right-1 bg-yellow-500 text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-            {item.customization.selectedPlayer.shirtNumber}
-          </div>
-        )}
-        {item.customization?.customNumber && (
-          <div className="absolute -top-1 -right-1 bg-yellow-500 text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-            {item.customization.customNumber}
-          </div>
-        )}
-      </div>
+      {/* Top row: Image + Info + Delete */}
+      <div className="flex gap-3 mb-3">
+        {/* Product Image */}
+        <div className="relative flex-shrink-0">
+          <img
+            src={item.image}
+            alt={item.name}
+            className="w-12 h-12 object-cover rounded-lg border border-white/20"
+          />
+          {item.customization?.selectedPlayer?.shirtNumber && (
+            <div className="absolute -top-1 -right-1 bg-yellow-500 text-black text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+              {item.customization.selectedPlayer.shirtNumber}
+            </div>
+          )}
+          {item.customization?.customNumber && (
+            <div className="absolute -top-1 -right-1 bg-yellow-500 text-black text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+              {item.customization.customNumber}
+            </div>
+          )}
+        </div>
 
-      {/* Product Details */}
-      <div className="flex-1 min-w-0 flex flex-col justify-between">
-        <div className="space-y-1">
-          <h4 className="font-semibold text-sm text-white leading-tight line-clamp-2">
+        {/* Product Info */}
+        <div className="flex-1 min-w-0">
+          <h4 className="font-medium text-sm text-white leading-tight line-clamp-1 mb-1">
             {item.name}
           </h4>
-
-          {/* Badges de personalización */}
-          <div className="flex flex-wrap gap-1">
-            {item.customization?.personalizationType === "player" &&
-              item.customization.selectedPlayer && (
-                <Badge className="bg-blue-500/80 text-white border-0 text-xs px-2 py-0.5">
-                  {item.customization.selectedPlayer.name} #
-                  {item.customization.selectedPlayer.shirtNumber}
-                </Badge>
-              )}
-            {item.customization?.personalizationType === "custom" && (
-              <Badge className="bg-purple-500/80 text-white border-0 text-xs px-2 py-0.5">
-                {item.customization.customName} #
-                {item.customization.customNumber}
-              </Badge>
-            )}
+          
+          {/* Team and Size */}
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs text-yellow-400 font-medium">{item.team}</span>
+            <span className="text-xs text-gray-400">•</span>
+            <span className="text-xs text-gray-300">Talla {item.size}</span>
             <Badge
-              className={`text-xs px-2 py-0.5 ${
+              className={`text-xs px-1.5 py-0.5 ${
                 item.version === "player"
                   ? "bg-yellow-500/80 text-black"
                   : "bg-gray-600/80 text-white"
@@ -87,52 +78,57 @@ function CartItemComponent({ item, onUpdateQuantity, onRemove }: CartItemCompone
             </Badge>
           </div>
 
-          {/* Team y Talla */}
-          <div className="flex items-center gap-1 text-xs text-gray-300">
-            <span className="text-yellow-400">{item.team}</span>
-            <span className="text-gray-400">•</span>
-            <span>Talla {item.size}</span>
-          </div>
+          {/* Customization */}
+          {item.customization && (
+            <div className="text-xs text-yellow-400">
+              {item.customization.selectedPlayer && (
+                <span>👤 {item.customization.selectedPlayer.name}</span>
+              )}
+              {item.customization.customName && (
+                <span>✏️ {item.customization.customName}</span>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Quantity controls and price */}
-        <div className="flex items-center justify-between pt-2 mt-2 border-t border-white/10">
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-6 w-6 border-white/30 text-white hover:bg-yellow-500/20 hover:border-yellow-400 transition-all duration-200"
-              onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-              disabled={item.quantity <= 1}
-            >
-              <Minus className="h-3 w-3" />
-            </Button>
-            <span className="text-sm font-medium text-white w-8 text-center">
-              {item.quantity}
-            </span>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-6 w-6 border-white/30 text-white hover:bg-yellow-500/20 hover:border-yellow-400 transition-all duration-200"
-              onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-            >
-              <Plus className="h-3 w-3" />
-            </Button>
-          </div>
+        {/* Delete button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6 text-red-400 hover:text-red-300 hover:bg-red-500/20 flex-shrink-0"
+          onClick={handleRemove}
+        >
+          <Trash2 className="h-3 w-3" />
+        </Button>
+      </div>
 
-          <div className="flex items-center gap-2">
-            <div className="text-sm font-bold text-yellow-400">
-              {formatPriceSimple(item.price * item.quantity)}
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 text-red-400 hover:text-white hover:bg-red-500/80 transition-all duration-200"
-              onClick={handleRemove}
-            >
-              <Trash2 className="h-3 w-3" />
-            </Button>
-          </div>
+      {/* Bottom row: Quantity controls + Price */}
+      <div className="flex items-center justify-between pt-2 border-t border-white/10">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-7 w-7 border-white/30 text-white hover:bg-yellow-500/20 hover:border-yellow-400 transition-all duration-200"
+            onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+            disabled={item.quantity <= 1}
+          >
+            <Minus className="h-3 w-3" />
+          </Button>
+          <span className="text-sm font-medium text-white w-6 text-center">
+            {item.quantity}
+          </span>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-7 w-7 border-white/30 text-white hover:bg-yellow-500/20 hover:border-yellow-400 transition-all duration-200"
+            onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+          >
+            <Plus className="h-3 w-3" />
+          </Button>
+        </div>
+
+        <div className="text-sm font-bold text-yellow-400">
+          {formatPriceSimple(item.price * item.quantity)}
         </div>
       </div>
     </div>
@@ -147,7 +143,32 @@ export function CartSidebar() {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleCheckout = () => {
-    setShowCheckout(true);
+    console.log('Abriendo checkout en nueva ventana...', { itemCount, total });
+    
+    // Crear URL con datos del pedido
+    const orderData = {
+      items: items.map(item => ({
+        id: item.id,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        team: item.team,
+        size: item.size,
+        version: item.version,
+        customization: item.customization
+      })),
+      total: total
+    };
+    
+    // Codificar datos para URL
+    const encodedData = btoa(JSON.stringify(orderData));
+    
+    // Abrir nueva ventana con el checkout
+    const checkoutUrl = `/checkout?data=${encodedData}`;
+    window.open(checkoutUrl, '_blank', 'width=800,height=900,scrollbars=yes,resizable=yes');
+    
+    // Cerrar el carrito
+    setIsOpen(false);
   };
 
   const handleOrderComplete = () => {
@@ -172,17 +193,7 @@ export function CartSidebar() {
 
   return (
     <>
-      {/* Checkout Form as Modal */}
-      {showCheckout && (
-        <div className="fixed inset-0 z-[100] bg-gradient-to-br from-blue-900 via-blue-800 to-yellow-600">
-          <CheckoutForm 
-            onSuccess={handleOrderComplete}
-            onCancel={() => setShowCheckout(false)}
-            total={total}
-            items={items}
-          />
-        </div>
-      )}
+
 
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
@@ -276,13 +287,15 @@ export function CartSidebar() {
                 </div>
               </div>
 
-              {/* Botón principal */}
+              {/* Botón principal - Optimizado para móvil */}
               <Button
                 onClick={handleCheckout}
-                className="w-full py-3 rounded-xl bg-yellow-400 text-black font-semibold hover:bg-yellow-500 transition-all"
+                className="w-full py-4 text-base rounded-xl bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold hover:from-yellow-500 hover:to-yellow-600 active:scale-[0.98] transition-all duration-200 shadow-lg hover:shadow-xl touch-manipulation"
+                style={{ WebkitTapHighlightColor: 'transparent' }}
               >
-                <ShoppingBag className="w-5 h-5 mr-2" />
-                Finalizar Pedido por WhatsApp
+                <ShoppingBag className="w-5 h-5 mr-2 flex-shrink-0" />
+                <span className="hidden sm:inline">Finalizar Pedido por WhatsApp</span>
+                <span className="sm:hidden text-sm">Finalizar por WhatsApp</span>
               </Button>
               
               {/* Botón secundario */}

@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import Teams from "./pages/Teams";
 import NotFound from "./pages/NotFound";
+import CheckoutPage from "./pages/Checkout";
 import AdminLogin from "./pages/admin/Login";
 import AdminLayout from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/shop" element={<Shop />} />
               <Route path="/teams" element={<Teams />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
               
               {/* Debug Route (temporal) */}
               <Route path="/debug" element={<DebugConnection />} />

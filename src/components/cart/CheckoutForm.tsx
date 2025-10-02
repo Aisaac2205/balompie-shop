@@ -69,29 +69,28 @@ export function CheckoutForm({ items, total, onSuccess, onCancel, onRemoveItem }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 overflow-y-auto bg-gradient-to-b from-black via-zinc-900 to-black">
-      <div className="relative w-full max-w-2xl space-y-8 my-8">
-        
-        {/* Botón X superior para cerrar */}
+    <div className="flex flex-col h-full max-h-[95vh] overflow-hidden">
+      {/* Header fijo con botón cerrar */}
+      <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-white/20">
+        <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+          <ShoppingBag className="h-5 w-5 text-yellow-400" />
+          Finalizar Pedido
+        </h2>
         <button
           onClick={onCancel}
-          className="absolute top-0 right-0 m-3 text-gray-300 hover:text-white transition-colors"
+          className="p-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-colors"
         >
-          <X className="h-6 w-6" />
+          <X className="h-5 w-5" />
         </button>
+      </div>
 
-        {/* Header */}
-        <Card className="border-white/20 bg-black/40 backdrop-blur-xl shadow-xl rounded-2xl">
-          <CardHeader className="text-center">
-            <CardTitle className="flex items-center justify-center gap-3 text-3xl text-white">
-              <div className="p-3 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full shadow-md">
-                <ShoppingBag className="h-8 w-8 text-black" />
-              </div>
-              Finalizar Pedido
-            </CardTitle>
-            <p className="text-gray-300 mt-2 text-sm">Revisa tu pedido y completa tu información</p>
-          </CardHeader>
-        </Card>
+      {/* Contenido con scroll */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+
+        {/* Header info */}
+        <div className="text-center py-2">
+          <p className="text-gray-300 text-sm">Revisa tu pedido y completa tu información</p>
+        </div>
 
         {/* Order Summary con scroll si es muy grande */}
         <Card className="border-white/20 bg-black/40 backdrop-blur-xl shadow-lg rounded-2xl">
