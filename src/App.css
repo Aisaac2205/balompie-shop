@@ -1,0 +1,8 @@
+/* 
+  Archivo App.css - Reglas CSS removidas
+  
+  Las reglas anteriores que forzaban texto blanco han sido removidas
+  para permitir que los colores configurados en los componentes funcionen correctamente.
+  
+  Los colores ahora se manejan a través de Tailwind CSS y las variables CSS en index.css
+*/
